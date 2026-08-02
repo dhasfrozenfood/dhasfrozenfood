@@ -1,4 +1,5 @@
-## Hi there 👋
+## Sedang dalam pemeliharaan pembaruan sistem 
+## Dibuat oleh : BYHAS STUDIO
 
 <!--
 **dhasfrozenfood/dhasfrozenfood** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
