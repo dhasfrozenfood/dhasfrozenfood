@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frozen Food Dhas - Kasir</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #101a33;
+    --navy-2: #1a2749;
+    --ink: #1b2436;
+    --muted: #6b7385;
+    --line: #e3e6ee;
+    --card: #ffffff;
+    --bg: #eef2fa;
+    --accent: #2f6fed;
+    --accent-dark: #1f52c4;
+    --accent-soft: #e7effe;
+    --frost: #eaf6ff;
+    --frost-line: #bfe0f9;
+    --mint: #12b886;
+    --mint-dark: #0d9367;
+    --mint-soft: #e3f9f1;
+    --amber: #ffe08a;
+    --amber-line: #f0c33e;
+    --coral: #ff8c66;
+    --violet: #8b7bf0;
+    --danger: #e0473e;
+    --radius: 12px;
+    --shadow-sm: 0 1px 2px rgba(16,26,51,0.06);
+    --shadow-md: 0 8px 24px rgba(16,26,51,0.10);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Manrope', Arial, 'Segoe UI', sans-serif;
+    background:
+      radial-gradient(680px 380px at 100% -8%, rgba(47,111,237,0.07), transparent 60%),
+      radial-gradient(600px 340px at -6% 0%, rgba(18,184,134,0.06), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { width:100%; max-width:none; margin:0; }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 23px; margin: 0; font-weight: 800; color: var(--navy); letter-spacing: -0.01em; }
+  h1::before { content: "🧊"; margin-right: 8px; font-size: 19px; }
+  .btn-group { display: flex; gap: 8px; }
+  .btn {
+    padding: 9px 16px;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 9px;
+    font-size: 13.5px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ink);
+    transition: background .15s ease, border-color .15s ease, transform .05s ease, box-shadow .15s ease;
+  }
+  .btn:hover { background: #f4f6fb; border-color: #c9cfe0; box-shadow: var(--shadow-sm); }
+  .btn:active { transform: translateY(1px); }
+  .btn.blue { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 4px 12px rgba(47,111,237,0.28); }
+  .btn.blue:hover { background: var(--accent-dark); }
+  .btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+  .meta-bar {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 13.5px;
+    margin-bottom: 16px;
+    background: var(--card);
+    padding: 13px 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    box-shadow: var(--shadow-sm);
+    color: var(--muted);
+  }
+  .meta-bar b { font-weight: 700; color: var(--ink); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 10px 12px;
+    font-size: 13.5px;
+    text-align: left;
+  }
+  thead th {
+    background: var(--navy);
+    background-image: linear-gradient(135deg, var(--navy), var(--navy-2));
+    font-weight: 700;
+    color: #eaf0ff;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    border-color: var(--navy);
+  }
+  .col-no { width: 40px; text-align: center; }
+  .col-qty { width: 80px; }
+  .col-jumlah { width: 130px; text-align: right; }
+  .col-action { width: 110px; }
+
+  tbody tr:not(.input-row):hover td { background: #f8f9fd; }
+
+  .input-row td { background: var(--frost); border-color: var(--frost-line); }
+  .input-row input {
+    width: 100%;
+    border: 1px solid #a9c9e8;
+    padding: 7px 9px;
+    font-size: 13.5px;
+    border-radius: 7px;
+    background: #fff;
+  }
+  .input-row input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,111,237,0.15); }
+
+  td.text-right { text-align: right; }
+
+  .action-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    display: block;
+    padding: 1px 0;
+  }
+  .action-link:hover { text-decoration: underline; }
+  .action-link.hapus { color: var(--danger); }
+
+  .summary-table { margin-top: 16px; max-width: 440px; margin-left: auto; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-md); }
+  .summary-table td { font-size: 14.5px; }
+  .summary-table .label { font-weight: 700; width: 140px; background: #fff; color: var(--muted); }
+  .summary-table input, .summary-table select {
+    width: 100%;
+    border: none;
+    text-align: right;
+    font-size: 14.5px;
+    padding: 4px;
+    font-family: inherit;
+    color: var(--ink);
+    background: transparent;
+  }
+  .summary-table select#metode-input { cursor: pointer; font-weight: 700; }
+  .summary-table .total-row td {
+    background: var(--amber);
+    border-color: var(--amber-line);
+    font-size: 24px;
+    font-weight: 800;
+    color: #4a3200;
+  }
+  .summary-table .kembali-row td {
+    background: linear-gradient(135deg, #d5f5e8, var(--mint-soft));
+    border-color: #a7e6c9;
+    font-size: 20px;
+    font-weight: 800;
+    color: #0a4f38;
+  }
+  .summary-table .kembali-row .print-btn {
+    float: right;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: -4px;
+  }
+  .summary-table .kembali-row .print-btn:hover { background: var(--navy-2); }
+
+  .btn-row { margin-top: 16px; display: flex; gap: 10px; }
+  button.primary {
+    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+    color: white;
+    border: none;
+    padding: 13px 26px;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(18,184,134,0.32);
+    transition: filter .15s ease, transform .05s ease;
+  }
+  button.primary:hover:not(:disabled) { filter: brightness(1.06); }
+  button.primary:active:not(:disabled) { transform: translateY(1px); }
+  button.primary:disabled { background: #c6cbd8; cursor: not-allowed; box-shadow: none; }
+  button.secondary {
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 13px 26px;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  button.secondary:hover { background: #f4f6fb; }
+
+  #status-msg {
+    margin-top: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    min-height: 18px;
+  }
+  #status-msg.error { color: var(--danger); }
+  #status-msg.success { color: var(--mint-dark); }
+
+  #suggest-box {
+    position: absolute;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    box-shadow: var(--shadow-md);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 50;
+    display: none;
+    width: 320px;
+  }
+  #suggest-box div { padding: 9px 11px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f0f1f5; }
+  #suggest-box div:last-child { border-bottom: none; }
+  #suggest-box div:hover { background: var(--frost); }
+  #suggest-box .harga-mini { color: var(--muted); font-size: 11.5px; }
+
+  /* ===== TABEL DAFTAR BARANG (bawah, mirip DataTables lama) ===== */
+  .list-section { margin-top: 26px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm); }
+  .list-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .list-head label { font-size: 13px; color: var(--muted); }
+  .list-head select { padding: 5px 7px; border-radius: 7px; border: 1px solid var(--line); }
+  .list-head input#daftar-search {
+    padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; width: 220px;
+  }
+  .list-head input#daftar-search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,111,237,0.12); }
+  table.list-table th { background: #f4f6fb; color: var(--navy); font-size: 12.5px; cursor: pointer; text-transform: none; letter-spacing: 0; font-weight: 700; }
+  table.list-table td { font-size: 13px; }
+  table.list-table tbody tr:hover td { background: #f8f9fd; }
+  table.list-table td.stok-habis { color: var(--danger); font-weight: 700; }
+  .pagination-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .pagination-row .pg-btns button {
+    background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 5px 12px; cursor: pointer; margin-left: 4px;
+  }
+  .pagination-row .pg-btns button:hover { background: #f4f6fb; }
+  .add-mini-btn {
+    background: var(--mint); color: #fff; border: none; border-radius: 6px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+  }
+  .add-mini-btn:hover { background: var(--mint-dark); }
+
+  /* ===== TOAST ===== */
+  #status-toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    padding: 12px 22px; border-radius: 9px; font-size: 13px; font-weight: 700;
+    z-index: 100; box-shadow: var(--shadow-md); display: none; color: #fff;
+  }
+  #status-toast.error { background: var(--danger); }
+  #status-toast.success { background: var(--mint-dark); }
+
+  /* ===== MODAL STRUK ===== */
+  #receipt-overlay { display:none; position:fixed; inset:0; background:rgba(16,26,51,0.55); z-index:200; align-items:center; justify-content:center; }
+  #receipt-content { padding:26px 22px; font-family: var(--struk-font, Arial), 'Segoe UI', sans-serif; font-size:12.5px; line-height:1.25; }
+  .sembunyikan-harga .kolom-harga { display:none !important; }
+
+  @media print {
+    @page { size: var(--struk-paper, 58mm) auto; margin: 0; }
+    html, body {
+      width: var(--struk-paper, 58mm) !important;
+      height: auto !important;
+      overflow: visible !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    body > *:not(#receipt-overlay) {
+      display: none !important;
+    }
+    #receipt-overlay {
+      display: block !important;
+      position: static !important;
+      background: #fff !important;
+      inset: auto !important;
+    }
+    #receipt-overlay > div {
+      width: var(--struk-paper, 58mm) !important;
+      max-width: var(--struk-paper, 58mm) !important;
+      max-height: none !important;
+      overflow: visible !important;
+      border-radius: 0 !important;
+    }
+    #receipt-overlay > div > div:last-child {
+      display: none !important;
+    }
+    #receipt-content {
+      position: static !important;
+      background: #fff !important;
+      color: #000 !important;
+      width: var(--struk-paper, 58mm) !important;
+      padding: 2mm !important;
+      font-size: 12px !important;
+      line-height: 1.25 !important;
+      font-family: var(--struk-font, Arial), 'Segoe UI', sans-serif !important;
+    }
+  }
+
+  /* ===== LAPORAN ===== */
+  .lap-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px;
+    box-shadow: var(--shadow-sm); border-top: 3px solid var(--accent); transition: box-shadow .15s ease, transform .1s ease;
+  }
+  .lap-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .lap-card:nth-of-type(2) { border-top-color: var(--mint); }
+  .lap-card:nth-of-type(3) { border-top-color: var(--coral); }
+  .lap-card:nth-of-type(4) { border-top-color: var(--violet); }
+  .lap-card .lap-label { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+  .lap-card .lap-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin: 6px 0 2px; color: var(--navy); }
+  .lap-card .lap-sub { font-size: 11.5px; color: var(--mint-dark); font-weight: 600; }
+  .range-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .lap-row { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .lap-row:last-child { border-bottom: none; }
+
+  /* ===== SIDEBAR ===== */
+  .app-shell { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 226px; flex-shrink: 0;
+    background: linear-gradient(180deg, var(--navy), var(--navy-2) 70%);
+    color: #aab2cc;
+    display: flex; flex-direction: column; padding: 20px 0;
+  }
+  .sidebar .brand {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 800; color: #fff;
+    padding: 0 22px 20px; letter-spacing: -0.01em;
+    border-bottom: 1px solid rgba(255,255,255,0.08); margin: 0 14px 12px;
+  }
+  .sidebar nav { flex: 1; display: flex; flex-direction: column; gap: 3px; padding: 0 10px; }
+  .sidebar .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    color: #9aa2c0; text-decoration: none; font-size: 13.5px; font-weight: 600;
+    background: none; border: none; cursor: pointer; text-align: left; width: 100%;
+    border-radius: 8px; transition: background .15s ease, color .15s ease;
+  }
+  .sidebar .nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .sidebar .nav-item.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(47,111,237,0.4); }
+  .sidebar .nav-logout { color: #ff8a80; margin-top: auto; }
+  .sidebar .nav-logout:hover { background: rgba(255,138,128,0.12); color: #ffb3ab; }
+  .main-content { flex: 1; min-width: 0; padding: 24px 28px; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px; background: none; border: none;
+    color: var(--accent); font-weight: 700; font-size: 13.5px; cursor: pointer; padding: 0 0 14px; margin: 0;
+  }
+  .back-btn:hover { text-decoration: underline; }
+  .placeholder-box { padding: 60px 20px; text-align: center; color: var(--muted); }
+  .bf-label { display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px; }
+  .bf-input { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:13.5px; box-sizing:border-box; }
+  .bf-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,111,237,0.12); }
+  .action-link.edit { color: var(--accent); }
+  .warna-row { display:flex; align-items:center; gap:8px; }
+  .warna-row input[type=color] {
+    width: 40px; height: 34px; border: 1px solid var(--line); border-radius: 7px;
+    padding: 2px; cursor: pointer; background: #fff;
+  }
+  .warna-row .warna-hex { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+  /* ===== OFFLINE BADGE ===== */
+  #offline-badge {
+    display: none; align-items: center; gap: 8px; background: #fff3d6; border: 1px solid #f0c33e;
+    color: #6b4d00; font-size: 12.5px; font-weight: 700; padding: 8px 14px; border-radius: 9px;
+    margin-bottom: 14px; cursor: pointer;
+  }
+  #offline-badge.show { display: flex; }
+  #offline-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #e0473e; flex-shrink: 0; animation: pulseDot 1.4s infinite; }
+  @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+  #offline-badge .sync-btn {
+    margin-left: auto; background: var(--navy); color: #fff; border: none; border-radius: 6px;
+    padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+
+  /* ===== WELCOME POPUP ===== */
+  .welcome-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9998;
+    align-items: center; justify-content: center;
+    background: rgba(16,26,51,0.45); opacity: 0; transition: opacity .25s ease;
+    cursor: pointer;
+  }
+  .welcome-overlay.show { opacity: 1; }
+  .welcome-card {
+    background: linear-gradient(160deg, #ffffff, var(--frost));
+    border-radius: 16px; padding: 34px 40px; text-align: center;
+    box-shadow: 0 20px 50px rgba(16,26,51,0.25);
+    transform: scale(0.92) translateY(6px); transition: transform .25s ease;
+    cursor: default;
+  }
+  .welcome-overlay.show .welcome-card { transform: scale(1) translateY(0); }
+  .welcome-icon { font-size: 40px; margin-bottom: 10px; }
+  .welcome-sapaan { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 21px; font-weight: 800; color: var(--navy); }
+  .welcome-toko { font-size: 13.5px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+
+</style>
+</head>
+<body>
+
+<div id="login-overlay" style="display:none; position:fixed; inset:0; background:#1b2a3a; z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:10px; padding:32px 28px; width:100%; max-width:320px; box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+    <div style="text-align:center; font-weight:800; font-size:17px; margin-bottom:4px;">Frozen Food Dhas</div>
+    <div style="text-align:center; font-size:12.5px; color:#777; margin-bottom:20px;">Silakan login untuk melanjutkan</div>
+    <label class="bf-label">Username</label>
+    <input id="login-username" class="bf-input" type="text" autocomplete="off" style="margin-bottom:12px;">
+    <label class="bf-label">Password</label>
+    <input id="login-password" class="bf-input" type="password" autocomplete="off" style="margin-bottom:8px;">
+    <div id="login-error" style="color:#c0392b; font-size:12.5px; min-height:18px; margin-bottom:6px;"></div>
+    <button class="btn blue" style="width:100%; padding:11px;" onclick="submitLogin()">Login</button>
+  </div>
+</div>
+
+<div id="welcome-overlay" class="welcome-overlay" onclick="closeWelcome()">
+  <div class="welcome-card">
+    <div class="welcome-icon">🧊</div>
+    <div class="welcome-sapaan" id="welcome-sapaan">Selamat datang!</div>
+    <div class="welcome-toko">Frozen Food Dhas</div>
+  </div>
+</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">Frozen Food Dhas</div>
+    <nav>
+      <button class="nav-item active" data-page="kasir">🛒 Kasir</button>
+      <button class="nav-item" data-page="dashboard">📊 Dashboard</button>
+      <button class="nav-item" data-page="laporan">📋 Laporan</button>
+      <button class="nav-item" data-page="transaksi">🧾 Transaksi</button>
+      <button class="nav-item" data-page="cektransaksi">🔍 Cek Transaksi</button>
+      <button class="nav-item" data-page="produk">📦 Produk <span id="stok-menipis-badge" style="display:none; background:#c0392b; color:#fff; border-radius:10px; font-size:10.5px; padding:1px 7px; margin-left:4px;"></span></button>
+      <button class="nav-item" data-page="kategori">🏷️ Kategori</button>
+      <button class="nav-item" data-page="barcode">🔖 Barcode</button>
+      <button class="nav-item" data-page="pengaturan">⚙️ Pengaturan</button>
+    </nav>
+    <button class="nav-item nav-logout" id="logout-btn">⏻ Keluar</button>
+  </aside>
+
+  <main class="main-content">
+  <div class="wrap" style="width:100%; max-width:none; margin:0;">
+
+  <div id="page-kasir">
+  <div id="offline-badge" onclick="trySyncOfflineQueue()">
+    <span class="dot"></span>
+    <span id="offline-badge-text">Mode offline — 0 transaksi menunggu sinkron</span>
+    <button type="button" class="sync-btn" onclick="event.stopPropagation(); trySyncOfflineQueue();">Sinkronkan Sekarang</button>
+  </div>
+  <div class="meta-bar">
+    <span><b>Tanggal:</b> <span id="tgl-now"></span></span>
+    <span><b>No Struk:</b> <span id="no-struk"></span></span>
+    <span><b>Kasir:</b> <span id="meta-kasir-nama">Administrator</span></span>
+  </div>
+
+  <div style="position:relative;">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-no">No</th>
+          <th>Kode</th>
+          <th>Nama Barang</th>
+          <th class="col-jumlah">Harga</th>
+          <th class="col-qty">Qty</th>
+          <th class="col-jumlah">Jumlah</th>
+          <th class="col-action">Action</th>
+        </tr>
+      </thead>
+      <tbody id="cart-body">
+        <tr class="input-row">
+          <td class="col-no">-</td>
+          <td colspan="2"><input id="kode-input" type="text" placeholder="Scan atau ketik kode/nama barang, lalu Enter" autocomplete="off" autofocus enterkeyhint="done"></td>
+          <td class="col-jumlah">&nbsp;</td>
+          <td><input id="qty-input" type="number" inputmode="numeric" enterkeyhint="done" value="1" min="1"></td>
+          <td class="col-jumlah">&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="suggest-box"></div>
+  </div>
+
+  <div class="list-section" style="margin-top:14px; padding:14px 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <b style="font-size:14px;">Tambahan Biaya (ongkos kirim, bungkus kado, dll)</b>
+      <button class="add-mini-btn" onclick="addExtraRow()">+ Tambah Baris</button>
+    </div>
+    <table id="extra-table" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th style="border:1px solid #ccc; padding:6px 8px; font-size:12.5px; background:#f0f0f0; text-align:left;">Nama</th>
+          <th style="border:1px solid #ccc; padding:6px 8px; font-size:12.5px; background:#f0f0f0; width:110px; text-align:left;">Berat (gram)</th>
+          <th style="border:1px solid #ccc; padding:6px 8px; font-size:12.5px; background:#f0f0f0; width:160px; text-align:left;">Harga</th>
+          <th style="border:1px solid #ccc; padding:6px 8px; font-size:12.5px; background:#f0f0f0; width:60px;"></th>
+        </tr>
+      </thead>
+      <tbody id="extra-tbody"></tbody>
+    </table>
+  </div>
+
+  <table class="summary-table">
+    <tr><td class="label">Sub Total</td><td class="text-right" id="subtotal-cell">0</td></tr>
+    <tr><td class="label">Diskon</td><td><input id="diskon-input" type="number" inputmode="numeric" enterkeyhint="done" value="0" min="0"></td></tr>
+    <tr class="total-row"><td class="label">Total</td><td class="text-right" id="total-cell">0</td></tr>
+    <tr><td class="label">Bayar</td><td><input id="bayar-input" type="number" inputmode="numeric" enterkeyhint="done" value="0" min="0"></td></tr>
+    <tr><td class="label">Metode</td><td>
+      <select id="metode-input" class="bf-input">
+        <option value="Cash">Cash</option>
+        <option value="Qris">Qris</option>
+      </select>
+    </td></tr>
+    <tr class="kembali-row"><td class="label">Kembali</td><td class="text-right" id="kembali-cell">0</td></tr>
+  </table>
+
+  <div class="btn-row">
+    <button class="primary" id="bayar-btn" disabled>Proses Bayar</button>
+    <button class="secondary" id="reset-btn">Transaksi Baru</button>
+  </div>
+  <div id="status-msg"></div>
+
+  <div class="list-section" style="margin-top:20px; padding:14px 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+      <b style="font-size:14px;">Daftar Barang</b>
+      <input id="kasir-list-search" type="text" placeholder="Cari kode / nama barang" autocomplete="off"
+        style="padding:7px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px; width:220px;"
+        oninput="kasirListPageNum=1; renderKasirBarangList()">
+    </div>
+    <table style="width:100%;">
+      <thead>
+        <tr>
+          <th style="width:40px;">No</th>
+          <th>Kode</th>
+          <th>Nama Barang</th>
+          <th style="text-align:right;">Harga</th>
+          <th style="width:90px;"></th>
+        </tr>
+      </thead>
+      <tbody id="kasir-list-tbody"></tbody>
+    </table>
+    <div class="pagination-row">
+      <span id="kasir-list-info">Menampilkan 0 dari 0 entries</span>
+      <div class="pg-btns">
+        <button onclick="kasirListPage(-1)">Previous</button>
+        <span id="kasir-list-pageinfo" style="margin:0 8px;">1</span>
+        <button onclick="kasirListPage(1)">Next</button>
+      </div>
+    </div>
+  </div>
+  </div><!-- /page-kasir -->
+
+  <div id="page-produk" style="display:none;">
+    <button class="back-btn" onclick="switchPage('kasir')">← Kembali ke Kasir</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <b style="font-size:16px;">Daftar Produk</b>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" id="produk-toggle-harga-btn" onclick="toggleHargaKolom('produk')">👁 Sembunyikan Harga</button>
+        <button class="btn blue" onclick="openBarangForm('add')">+ Tambah Barang</button>
+      </div>
+    </div>
+    <div class="list-section" style="margin-top:0;">
+      <div class="list-head">
+        <div>
+          <label>Show
+            <select id="perpage-select">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="150">150</option>
+            </select>
+          entries</label>
+        </div>
+        <div>
+          <label>Search: <input id="daftar-search" type="text" placeholder="cari kode / nama" autocomplete="off"></label>
+        </div>
+      </div>
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th style="width:34px;">No</th>
+            <th>Kode</th>
+            <th>Nama</th>
+            <th style="text-align:right;">Stok Minimal</th>
+            <th style="text-align:right;">Stok Sekarang</th>
+            <th style="text-align:right;">Stok Maksimal</th>
+            <th>Satuan</th>
+            <th class="kolom-harga" style="text-align:right;">Harga Jual</th>
+            <th class="kolom-harga" style="text-align:right;">Harga Beli</th>
+            <th style="width:80px; text-align:center;">Barcode</th>
+            <th style="width:120px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="daftar-tbody"></tbody>
+      </table>
+      <div class="pagination-row">
+        <span id="daftar-info">Menampilkan 0 dari 0 entries</span>
+        <div class="pg-btns">
+          <button onclick="daftarPage(-1)">Previous</button>
+          <span id="daftar-pageinfo" style="margin:0 8px;">1</span>
+          <button onclick="daftarPage(1)">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-kategori" style="display:none;">
+    <button class="back-btn" onclick="switchPage('kasir')">← Kembali ke Kasir</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <b style="font-size:16px;">Master Kategori</b>
+    </div>
+    <div class="list-section" style="margin-top:0;">
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <input id="kategori-input" class="bf-input" type="text" placeholder="Nama kategori baru" style="max-width:280px;">
+        <button class="btn blue" onclick="submitKategori()">+ Tambah Kategori</button>
+      </div>
+      <div id="kategori-status" style="font-size:12.5px; margin-bottom:8px;"></div>
+      <table class="list-table">
+        <thead><tr><th style="width:40px;">No</th><th>Nama Kategori</th><th style="width:150px;"></th></tr></thead>
+        <tbody id="kategori-tbody"></tbody>
+      </table>
+    </div>
+  </div><!-- /page-kategori -->
+
+  <div id="page-barcode" style="display:none;">
+    <button class="back-btn" onclick="switchPage('kasir')">← Kembali ke Kasir</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <b style="font-size:16px;">Daftar Barcode</b>
+      <button class="btn blue" onclick="printBarcodeList()">🖨️ Cetak Daftar</button>
+    </div>
+    <div class="list-section" style="margin-top:0;">
+      <div class="list-head">
+        <label>Search: <input id="barcode-search" type="text" placeholder="cari kode / nama" autocomplete="off" oninput="renderBarcodeTable()"></label>
+      </div>
+      <table class="list-table" id="barcode-table">
+        <thead><tr><th style="width:40px;">No</th><th>Barcode / Kode</th><th>Nama Barang</th><th style="text-align:right;">Harga Jual</th></tr></thead>
+        <tbody id="barcode-tbody"></tbody>
+      </table>
+    </div>
+  </div><!-- /page-barcode -->
+
+  <div id="page-laporan" style="display:none;">
+    <button class="back-btn" onclick="switchPage('kasir')">← Kembali ke Kasir</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+      <b style="font-size:16px;">Laporan Penjualan</b>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label style="font-size:12.5px;">Dari <input id="lap-tgl-mulai" type="date" class="bf-input" style="padding:6px 8px;"></label>
+        <label style="font-size:12.5px;">Sampai <input id="lap-tgl-selesai" type="date" class="bf-input" style="padding:6px 8px;"></label>
+        <button class="btn blue" onclick="loadLaporanTabel()">Tampilkan</button>
+        <button class="btn" id="laporan-toggle-harga-btn" onclick="toggleHargaKolom('laporan')">👁 Sembunyikan Harga</button>
+        <button class="btn" onclick="exportLaporanCSV()">⬇️ Export CSV</button>
+      </div>
+    </div>
+    <div class="list-section" style="margin-top:0;">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th style="width:60px;">No</th>
+            <th>Tanggal</th>
+            <th class="kolom-harga" style="text-align:right;">Total Omset</th>
+            <th class="kolom-harga" style="text-align:right;">Total Laba</th>
+            <th style="width:100px;"></th>
+          </tr>
+        </thead>
+        <tbody id="laporan-tabel-tbody">
+          <tr><td colspan="5" style="padding:16px; text-align:center; color:#888;">Memuat...</td></tr>
+        </tbody>
+        <tfoot>
+          <tr style="font-weight:800; background:#f7f7f7;">
+            <td colspan="2" style="padding:8px 10px;">Total</td>
+            <td class="kolom-harga" style="text-align:right; padding:8px 10px;" id="laporan-tabel-total-omset">0</td>
+            <td class="kolom-harga" style="text-align:right; padding:8px 10px;" id="laporan-tabel-total-laba">0</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div><!-- /page-laporan -->
+
+  <div id="page-dashboard" style="display:none;">
+    <button class="back-btn" onclick="switchPage('kasir')">← Kembali ke Kasir</button>
+    <div class="list-head" style="margin-bottom:14px;">
+      <b style="font-size:16px;">Dashboard Laporan</b>
+      <div class="btn-group">
+        <button class="btn range-btn active" data-range="today">Hari Ini</button>
+        <button class="btn range-btn" data-range="7d">7 Hari</button>
+        <button class="btn range-btn" data-range="30d">30 Hari</button>
+      </div>
+    </div>
+
+    <div id="laporan-cards" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:12px; margin-bottom:18px;"></div>
+
+    <div id="stok-menipis-panel" class="list-section" style="margin-top:0; margin-bottom:18px; display:none;">
+      <b style="font-size:14px; color:#c0392b;">⚠️ Stok Menipis</b>
+      <div id="stok-menipis-list" style="margin-top:10px;"></div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;">
+      <div class="list-section" style="margin-top:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <b style="font-size:14px;">Penjualan Harian</b>
+          <span style="font-size:11.5px; color:#888;">7 hari terakhir</span>
+        </div>
+        <canvas id="chart-harian" height="160"></canvas>
+      </div>
+      <div class="list-section" style="margin-top:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <b style="font-size:14px;">Tren Pendapatan</b>
+          <span style="font-size:11.5px; color:#888;">30 hari terakhir</span>
+        </div>
+        <canvas id="chart-tren" height="160"></canvas>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:14px;">
+      <div class="list-section" style="margin-top:0;">
+        <b style="font-size:14px;">Transaksi Terakhir</b>
+        <div id="laporan-transaksi" style="margin-top:10px;"></div>
+      </div>
+      <div class="list-section" style="margin-top:0;">
+        <b style="font-size:14px;">Produk Terlaris</b>
+        <div id="laporan-produk" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  </div><!-- /page-dashboard -->
+
+  <div id="page-transaksi" style="display:none;">
+    <button class="back-btn" onclick="switchPage('kasir')">← Kembali ke Kasir</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <b style="font-size:16px;">Riwayat Transaksi</b>
+      <label style="font-size:13px;">Urutkan:
+        <select id="riwayat-sort-select" class="bf-input" style="width:auto; display:inline-block; padding:6px 10px;" onchange="renderRiwayatList()">
+          <option value="tanggal_desc">Terbaru</option>
+          <option value="total_desc">Total: Terbesar → Terkecil</option>
+          <option value="total_asc">Total: Terkecil → Terbesar</option>
+        </select>
+      </label>
+    </div>
+    <div class="list-section" style="margin-top:0; padding:8px 14px;">
+      <div id="riwayat-list"></div>
+    </div>
+  </div>
+
+  <div id="page-cektransaksi" style="display:none;">
+    <button class="back-btn" onclick="switchPage('kasir')">← Kembali ke Kasir</button>
+    <b style="font-size:16px; display:block; margin-bottom:12px;">Cek Transaksi</b>
+    <div class="list-section" style="margin-top:0;">
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <input id="cek-trx-input" class="bf-input" type="text" placeholder="Masukkan No Struk (lihat di struk belanja)" style="max-width:320px;"
+          onkeydown="if(event.key==='Enter'){event.preventDefault(); cekTransaksi();}">
+        <button class="btn blue" onclick="cekTransaksi()">Cek</button>
+      </div>
+      <div id="cek-trx-hasil"></div>
+    </div>
+  </div><!-- /page-cektransaksi -->
+
+  <div id="page-pengaturan" style="display:none;">
+    <button class="back-btn" onclick="switchPage('kasir')">← Kembali ke Kasir</button>
+    <b style="font-size:16px; display:block; margin-bottom:12px;">Pengaturan</b>
+
+    <div class="list-section" style="margin-top:0; margin-bottom:16px;">
+      <b style="font-size:14px; display:block; margin-bottom:4px;">Warna Tampilan</b>
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px;">Sesuaikan warna aksen aplikasi. Perubahan langsung terlihat dan tersimpan otomatis di perangkat ini.</div>
+      <div id="warna-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:14px; max-width:760px;">
+        <div>
+          <label class="bf-label">Warna Utama (tombol, link)</label>
+          <div class="warna-row"><input type="color" class="warna-pick" data-var="--accent" data-dark="--accent-dark"><span class="warna-hex">#2f6fed</span></div>
+        </div>
+        <div>
+          <label class="bf-label">Warna Sukses (tombol Bayar)</label>
+          <div class="warna-row"><input type="color" class="warna-pick" data-var="--mint" data-dark="--mint-dark"><span class="warna-hex">#12b886</span></div>
+        </div>
+        <div>
+          <label class="bf-label">Warna Sidebar</label>
+          <div class="warna-row"><input type="color" class="warna-pick" data-var="--navy" data-dark="--navy-2"><span class="warna-hex">#101a33</span></div>
+        </div>
+        <div>
+          <label class="bf-label">Warna Sel Total</label>
+          <div class="warna-row"><input type="color" class="warna-pick" data-var="--amber"><span class="warna-hex">#ffe08a</span></div>
+        </div>
+        <div>
+          <label class="bf-label">Warna Latar Halaman</label>
+          <div class="warna-row"><input type="color" class="warna-pick" data-var="--bg"><span class="warna-hex">#eef2fa</span></div>
+        </div>
+      </div>
+      <div style="margin-top:14px; display:flex; gap:8px;">
+        <button type="button" class="btn" onclick="resetWarnaTema()">Reset ke Default</button>
+      </div>
+
+      <div style="margin-top:18px;">
+        <label class="bf-label">Pratinjau Tampilan</label>
+        <div id="warna-preview" style="border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; max-width:520px; box-shadow:var(--shadow-md); display:flex; height:260px;">
+          <div style="width:120px; flex-shrink:0; background:var(--navy); background-image:linear-gradient(180deg, var(--navy), var(--navy-2) 70%); padding:12px 8px; display:flex; flex-direction:column; gap:3px;">
+            <div style="color:#fff; font-weight:800; font-size:11px; font-family:'Plus Jakarta Sans',sans-serif; padding:0 4px 10px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:6px;">Frozen Food Dhas</div>
+            <div style="background:var(--accent); color:#fff; border-radius:6px; padding:6px 8px; font-size:10.5px; font-weight:700; display:flex; align-items:center; gap:6px;">🛒 Kasir</div>
+            <div style="color:#9aa2c0; border-radius:6px; padding:6px 8px; font-size:10.5px; font-weight:600; display:flex; align-items:center; gap:6px;">📊 Dashboard</div>
+            <div style="color:#9aa2c0; border-radius:6px; padding:6px 8px; font-size:10.5px; font-weight:600; display:flex; align-items:center; gap:6px;">📋 Laporan</div>
+            <div style="color:#9aa2c0; border-radius:6px; padding:6px 8px; font-size:10.5px; font-weight:600; display:flex; align-items:center; gap:6px;">📦 Produk</div>
+          </div>
+          <div style="flex:1; background:var(--bg); padding:12px; overflow:hidden;">
+            <div style="background:#fff; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:8px; padding:7px 10px; font-size:9.5px; color:var(--muted); margin-bottom:8px;">
+              <b style="color:var(--ink);">Tanggal:</b> 07 Agu 2026 &nbsp; <b style="color:var(--ink);">Kasir:</b> Admin
+            </div>
+            <table style="width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; font-size:9.5px;">
+              <tr style="background:var(--navy); background-image:linear-gradient(135deg, var(--navy), var(--navy-2));">
+                <th style="padding:5px 7px; color:#eaf0ff; text-align:left; font-size:8.5px; text-transform:uppercase;">Produk</th>
+                <th style="padding:5px 7px; color:#eaf0ff; text-align:right; font-size:8.5px; text-transform:uppercase;">Jumlah</th>
+              </tr>
+              <tr><td style="padding:5px 7px; border:1px solid var(--line);">Nugget Ayam</td><td style="padding:5px 7px; border:1px solid var(--line); text-align:right;">Rp18.000</td></tr>
+              <tr style="background:var(--frost);"><td style="padding:5px 7px; border:1px solid var(--frost-line);">+ Tambah item...</td><td style="padding:5px 7px; border:1px solid var(--frost-line);"></td></tr>
+            </table>
+            <div style="margin-top:8px; background:var(--amber); border-radius:6px; padding:7px 10px; font-size:11px; font-weight:800; color:#4a3200; text-align:right;">Total &nbsp; Rp18.000</div>
+            <div style="margin-top:6px; display:flex; gap:6px;">
+              <button type="button" style="flex:1; background:linear-gradient(135deg, var(--mint), var(--mint-dark)); color:#fff; border:none; border-radius:6px; padding:7px; font-size:10px; font-weight:700; cursor:default;">Bayar</button>
+              <button type="button" style="flex:1; background:#fff; border:1px solid var(--line); border-radius:6px; padding:7px; font-size:10px; font-weight:700; cursor:default;">Batal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="list-section" style="margin-top:0; margin-bottom:16px;">
+      <b style="font-size:14px; display:block; margin-bottom:4px;">Preferensi Cetak Struk</b>
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px;">Pilih ukuran kertas printer thermal yang dipakai di kasir. Berlaku untuk Print maupun Simpan PDF.</div>
+      <div style="display:flex; gap:16px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13.5px; font-weight:600;">
+          <input type="radio" name="struk-paper-radio" value="58" onchange="setStrukPaper(58)"> 58mm (kasir kecil)
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13.5px; font-weight:600;">
+          <input type="radio" name="struk-paper-radio" value="80" onchange="setStrukPaper(80)"> 80mm (kasir besar)
+        </label>
+      </div>
+    </div>
+
+    <div class="list-section" style="margin-top:0; margin-bottom:16px;">
+      <b style="font-size:14px; display:block; margin-bottom:12px;">Info Toko</b>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:640px;">
+        <div style="grid-column:1/-1;">
+          <label class="bf-label">Nama Toko</label>
+          <input id="set-nama-toko" class="bf-input" type="text" placeholder="Nama toko">
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="bf-label">Alamat</label>
+          <input id="set-alamat-toko" class="bf-input" type="text" placeholder="Alamat toko">
+        </div>
+        <div>
+          <label class="bf-label">Telepon</label>
+          <input id="set-telp-toko" class="bf-input" type="text" placeholder="Nomor telepon">
+        </div>
+        <div>
+          <label class="bf-label">Singkatan (untuk no. struk)</label>
+          <input id="set-singkatan-toko" class="bf-input" type="text" placeholder="Contoh: FFD">
+        </div>
+        <div>
+          <label class="bf-label">Nama Kasir</label>
+          <input id="set-nama-kasir" class="bf-input" type="text" placeholder="Contoh: Administrator">
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="bf-label">Teks Bawah Struk</label>
+          <input id="set-footer-struk" class="bf-input" type="text" placeholder="Contoh: Terima kasih telah berbelanja">
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="bf-label">Font Struk</label>
+          <div style="display:flex; gap:8px;">
+            <input id="set-font-struk" class="bf-input" type="text" list="font-struk-list" placeholder="Ketik untuk cari font..." style="flex:1;" oninput="previewFontStruk()">
+            <button type="button" class="btn" onclick="resetFontStruk()" style="white-space:nowrap;">Reset ke Default</button>
+          </div>
+          <datalist id="font-struk-list">
+            <option value="Arial">
+            <option value="Segoe UI">
+            <option value="Verdana">
+            <option value="Tahoma">
+            <option value="Trebuchet MS">
+            <option value="Calibri">
+            <option value="Century Gothic">
+            <option value="Helvetica">
+            <option value="Times New Roman">
+            <option value="Georgia">
+            <option value="Garamond">
+            <option value="Cambria">
+            <option value="Courier New">
+            <option value="Consolas">
+            <option value="Lucida Console">
+            <option value="Comic Sans MS">
+            <option value="Impact">
+            <option value="sans-serif">
+            <option value="serif">
+            <option value="monospace">
+          </datalist>
+          <div id="font-struk-preview" style="margin-top:8px; padding:12px 14px; border:1px dashed #ccc; border-radius:5px; background:#fafafa; font-size:13px; line-height:1.6;">
+            <div style="font-weight:700;">TOKO CONTOH</div>
+            <div>Struk Belanja</div>
+            <div>Indomie Goreng x2 &nbsp; Rp7.000</div>
+            <div>Total &nbsp; Rp7.000</div>
+          </div>
+        </div>
+      </div>
+      <div id="pengaturan-toko-status" style="font-size:12.5px; margin-top:8px;"></div>
+      <button class="btn blue" style="margin-top:10px;" onclick="submitPengaturanToko()">Simpan Info Toko</button>
+    </div>
+
+    <div class="list-section" style="margin-top:0;">
+      <b style="font-size:14px; display:block; margin-bottom:12px;">Master Satuan</b>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <input id="satuan-input" class="bf-input" type="text" placeholder="Nama satuan baru (mis. Lusin)" style="max-width:280px;">
+        <button class="btn blue" onclick="submitSatuan()">+ Tambah Satuan</button>
+      </div>
+      <div id="satuan-status" style="font-size:12.5px; margin-bottom:8px;"></div>
+      <table class="list-table">
+        <thead><tr><th style="width:40px;">No</th><th>Nama Satuan</th><th style="width:150px;"></th></tr></thead>
+        <tbody id="satuan-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  </div><!-- /wrap -->
+  </main>
+</div><!-- /app-shell -->
+
+<!-- ===== MODAL FORM BARANG (Tambah/Edit) ===== -->
+<div id="barang-form-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:250; align-items:center; justify-content:center;">
+  <div style="background:#fff; width:480px; max-width:94vw; max-height:90vh; overflow-y:auto; border-radius:8px; border:1px solid #ccc;">
+    <div style="padding:16px 20px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
+      <h2 id="barang-form-title" style="margin:0; font-size:16px; font-weight:700;">Tambah Barang</h2>
+      <button onclick="closeBarangForm()" style="background:none; border:none; color:#777; font-size:20px; cursor:pointer;">×</button>
+    </div>
+    <div style="padding:18px 20px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div style="grid-column:1/-1;">
+        <label class="bf-label">Kategori</label>
+        <select id="bf-kategori" class="bf-input">
+          <option value="">-- Silahkan Pilih --</option>
+        </select>
+      </div>
+      <div>
+        <label class="bf-label">Kode</label>
+        <input id="bf-kode" class="bf-input" type="text" placeholder="Barcode/kode barang">
+      </div>
+      <div>
+        <label class="bf-label">Nama</label>
+        <input id="bf-nama" class="bf-input" type="text" placeholder="Nama barang">
+      </div>
+      <div>
+        <label class="bf-label">Stok Minimal</label>
+        <input id="bf-stok-min" class="bf-input" type="number" min="0" value="0">
+      </div>
+      <div>
+        <label class="bf-label">Stok Maksimal</label>
+        <input id="bf-stok-max" class="bf-input" type="number" min="0" value="0">
+      </div>
+      <div>
+        <label class="bf-label">Stok Sekarang</label>
+        <input id="bf-stok" class="bf-input" type="number" min="0" value="0">
+      </div>
+      <div>
+        <label class="bf-label">Satuan</label>
+        <select id="bf-satuan" class="bf-input">
+          <option value="">-- Silahkan Pilih --</option>
+        </select>
+      </div>
+      <div>
+        <label class="bf-label">Harga Beli</label>
+        <input id="bf-harga-beli" class="bf-input" type="number" min="0" value="0">
+      </div>
+      <div>
+        <label class="bf-label">Harga Jual</label>
+        <input id="bf-harga-jual" class="bf-input" type="number" min="0" value="0">
+      </div>
+      <div>
+        <label class="bf-label">Berat (gram)</label>
+        <input id="bf-berat" class="bf-input" type="number" min="0" value="0">
+      </div>
+      <div>
+        <label class="bf-label">Isi (per pack)</label>
+        <input id="bf-isi" class="bf-input" type="number" min="0" value="0">
+      </div>
+    </div>
+    <div id="barang-form-status" style="padding:0 20px; font-size:12.5px;"></div>
+    <div style="padding:16px 20px; border-top:1px dashed #ccc; display:flex; gap:8px;">
+      <button id="barang-form-submit-btn" onclick="submitBarangForm()" style="flex:1; padding:11px; background:#3b8ce0; color:#fff; border:none; border-radius:5px; font-weight:700; cursor:pointer;">Simpan</button>
+      <button onclick="closeBarangForm()" style="flex:1; padding:11px; background:#eee; border:none; border-radius:5px; font-weight:700; cursor:pointer;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div id="status-toast"></div>
+
+<!-- ===== MODAL LIHAT BARCODE ===== -->
+<div id="barcode-view-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:260; align-items:center; justify-content:center;">
+  <div style="background:#fff; width:320px; max-width:92vw; border-radius:8px; border:1px solid #ccc; padding:20px; text-align:center;">
+    <div id="barcode-view-nama" style="font-weight:700; font-size:14px; margin-bottom:10px;"></div>
+    <div id="barcode-view-kode" style="font-family:'Courier New', monospace; font-size:20px; letter-spacing:2px; padding:14px; border:1px dashed #999; border-radius:6px; margin-bottom:14px;"></div>
+    <button onclick="closeBarcodeView()" style="width:100%; padding:10px; background:#eee; border:none; border-radius:5px; font-weight:700; cursor:pointer;">Tutup</button>
+  </div>
+</div>
+
+<!-- ===== MODAL STRUK ===== -->
+<div id="receipt-overlay">
+  <div style="background:#fff; color:#1c1c1c; width:340px; max-height:88vh; overflow-y:auto; border-radius:8px;">
+    <div id="receipt-content"></div>
+    <div style="padding:16px 22px; border-top:1px dashed #ccc; display:flex; gap:8px;">
+      <button id="print-receipt-btn" onclick="printReceipt()" style="flex:1; padding:11px; background:#3b8ce0; color:#fff; border:none; border-radius:5px; font-weight:700; cursor:pointer;">Print</button>
+      <button id="pdf-receipt-btn" onclick="simpanStrukPdf()" style="flex:1; padding:11px; background:#12b886; color:#fff; border:none; border-radius:5px; font-weight:700; cursor:pointer;">Simpan PDF</button>
+      <button onclick="closeReceipt()" style="flex:1; padding:11px; background:#eee; border:none; border-radius:5px; font-weight:700; cursor:pointer;">← Kembali</button>
+    </div>
+  </div>
+</div>
+
+<!-- Riwayat sekarang berupa halaman (#page-transaksi), bukan modal -->
+
+<script>
+// ==================== LOGIN (sekali per tab baru) ====================
+const LOGIN_SESSION_KEY = "ffd_logged_in";
+const LOGIN_USERNAME = "admin";
+const LOGIN_PASSWORD = "admin";
+
+function checkLoginSession() {
+  if (sessionStorage.getItem(LOGIN_SESSION_KEY) === "1") return;
+  document.getElementById("login-overlay").style.display = "flex";
+  document.querySelector(".app-shell").style.visibility = "hidden";
+  document.getElementById("login-username").focus();
+}
+
+function submitLogin() {
+  const u = document.getElementById("login-username").value.trim();
+  const p = document.getElementById("login-password").value;
+  const errEl = document.getElementById("login-error");
+  if (u === LOGIN_USERNAME && p === LOGIN_PASSWORD) {
+    sessionStorage.setItem(LOGIN_SESSION_KEY, "1");
+    document.getElementById("login-overlay").style.display = "none";
+    document.querySelector(".app-shell").style.visibility = "visible";
+    showWelcome();
+  } else {
+    errEl.textContent = "Username atau password salah.";
+  }
+}
+
+function showWelcome() {
+  const jam = new Date().getHours();
+  const sapaan = jam < 11 ? "Selamat pagi" : jam < 15 ? "Selamat siang" : jam < 18 ? "Selamat sore" : "Selamat malam";
+  const el = document.getElementById("welcome-overlay");
+  document.getElementById("welcome-sapaan").textContent = sapaan + "!";
+  el.style.display = "flex";
+  setTimeout(() => { el.classList.add("show"); }, 10);
+  setTimeout(closeWelcome, 2600);
+}
+
+function closeWelcome() {
+  const el = document.getElementById("welcome-overlay");
+  el.classList.remove("show");
+  setTimeout(() => { el.style.display = "none"; }, 250);
+}
+
+document.getElementById("login-username").addEventListener("keydown", (e) => { if (e.key === "Enter") submitLogin(); });
+document.getElementById("login-password").addEventListener("keydown", (e) => { if (e.key === "Enter") submitLogin(); });
+
+// ==================== TEMA WARNA (PENGATURAN) ====================
+const THEME_KEY = "ffd_theme_colors";
+const THEME_DEFAULT = { "--accent": "#2f6fed", "--mint": "#12b886", "--navy": "#101a33", "--amber": "#ffe08a", "--bg": "#eef2fa" };
+
+function shadeHex(hex, percent) {
+  // percent negatif = lebih gelap, positif = lebih terang
+  const num = parseInt(hex.replace("#", ""), 16);
+  let r = (num >> 16) + Math.round(255 * percent);
+  let g = ((num >> 8) & 0x00FF) + Math.round(255 * percent);
+  let b = (num & 0x0000FF) + Math.round(255 * percent);
+  r = Math.max(0, Math.min(255, r));
+  g = Math.max(0, Math.min(255, g));
+  b = Math.max(0, Math.min(255, b));
+  return "#" + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+}
+
+function applyThemeColors(colors) {
+  const root = document.documentElement.style;
+  root.setProperty("--accent", colors["--accent"]);
+  root.setProperty("--accent-dark", shadeHex(colors["--accent"], -0.18));
+  root.setProperty("--accent-soft", shadeHex(colors["--accent"], 0.85));
+  root.setProperty("--mint", colors["--mint"]);
+  root.setProperty("--mint-dark", shadeHex(colors["--mint"], -0.18));
+  root.setProperty("--navy", colors["--navy"]);
+  root.setProperty("--navy-2", shadeHex(colors["--navy"], 0.14));
+  root.setProperty("--amber", colors["--amber"]);
+  root.setProperty("--bg", colors["--bg"]);
+}
+
+function loadThemeColors() {
+  let colors;
+  try {
+    colors = JSON.parse(localStorage.getItem(THEME_KEY)) || {};
+  } catch (e) { colors = {}; }
+  colors = Object.assign({}, THEME_DEFAULT, colors);
+  applyThemeColors(colors);
+  document.querySelectorAll(".warna-pick").forEach(inp => {
+    const key = inp.dataset.var;
+    inp.value = colors[key];
+    inp.nextElementSibling.textContent = colors[key];
+  });
+}
+
+function saveThemeColorFromInput(inp) {
+  let colors;
+  try {
+    colors = JSON.parse(localStorage.getItem(THEME_KEY)) || {};
+  } catch (e) { colors = {}; }
+  colors = Object.assign({}, THEME_DEFAULT, colors);
+  colors[inp.dataset.var] = inp.value;
+  localStorage.setItem(THEME_KEY, JSON.stringify(colors));
+  inp.nextElementSibling.textContent = inp.value;
+  applyThemeColors(colors);
+}
+
+function resetWarnaTema() {
+  localStorage.removeItem(THEME_KEY);
+  applyThemeColors(THEME_DEFAULT);
+  document.querySelectorAll(".warna-pick").forEach(inp => {
+    const key = inp.dataset.var;
+    inp.value = THEME_DEFAULT[key];
+    inp.nextElementSibling.textContent = THEME_DEFAULT[key];
+  });
+}
+
+document.querySelectorAll(".warna-pick").forEach(inp => {
+  inp.addEventListener("input", () => saveThemeColorFromInput(inp));
+});
+
+loadThemeColors();
+applyStrukPaperSetting();
+updateOfflineBadge();
+if (navigator.onLine) trySyncOfflineQueue();
+
+checkLoginSession();
+
+// ==================== KONFIGURASI ====================
+const API_URL = "https://script.google.com/macros/s/AKfycbzappuxzHpCbhOFf-wohuODem8FfRMgO64f-SuzgQ_pD4Jlc0NHBs2GtFubKp4BPJlb/exec";
+let TOKO_NAMA = "Frozen Food Dhas";
+let NAMA_KASIR = "Administrator";
+try {
+  const _savedToko = JSON.parse(localStorage.getItem("ffd_toko_setting") || "null");
+  if (_savedToko && _savedToko.nama) TOKO_NAMA = _savedToko.nama;
+  if (_savedToko && _savedToko.kasir) NAMA_KASIR = _savedToko.kasir;
+} catch (e) { /* pakai default */ }
+
+let allBarang = [];
+let cart = [];
+let extraItems = []; // biaya tambahan: [{id, nama, harga}]
+let extraIdCounter = 1;
+
+function rupiah(n) { return Number(n).toLocaleString("id-ID"); }
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+function setMetaAwal() {
+  const now = new Date();
+  const tgl = String(now.getDate()).padStart(2,'0') + "-" + String(now.getMonth()+1).padStart(2,'0') + "-" + now.getFullYear()
+    + " " + String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0') + ":" + String(now.getSeconds()).padStart(2,'0');
+  document.getElementById("tgl-now").textContent = tgl;
+  document.getElementById("no-struk").textContent = Math.floor(100000 + Math.random()*899999);
+}
+
+// ==================== MUAT DATA ====================
+async function loadBarang() {
+  try {
+    const res = await fetch(API_URL + "?action=getBarang");
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal memuat data");
+    allBarang = json.data;
+    renderDaftarTable();
+    renderKasirBarangList();
+    renderStokMenipis();
+  } catch (err) {
+    showStatus("Gagal memuat data barang: " + err.message, "error");
+  }
+}
+
+// ==================== STOK MENIPIS ====================
+function renderStokMenipis() {
+  const menipis = allBarang.filter(b => b.stok_min > 0 && b.stok <= b.stok_min);
+
+  const badge = document.getElementById("stok-menipis-badge");
+  if (menipis.length > 0) {
+    badge.textContent = menipis.length;
+    badge.style.display = "inline-block";
+  } else {
+    badge.style.display = "none";
+  }
+
+  const panel = document.getElementById("stok-menipis-panel");
+  const listEl = document.getElementById("stok-menipis-list");
+  if (!panel || !listEl) return;
+
+  if (menipis.length === 0) {
+    panel.style.display = "none";
+    return;
+  }
+  panel.style.display = "block";
+  listEl.innerHTML = menipis.map(b => `
+    <div class="lap-row">
+      <div>${escapeHtml(b.nama)} <span style="color:#888; font-size:11.5px;">(${escapeHtml(String(b.barcode||''))})</span></div>
+      <div style="font-weight:800; color:#c0392b;">Stok: ${b.stok} / min ${b.stok_min}</div>
+    </div>
+  `).join("");
+}
+
+let kasirListPageNum = 1;
+const KASIR_LIST_PER_PAGE = 10;
+
+function kasirListPage(delta) {
+  const q = (document.getElementById("kasir-list-search").value || "").trim().toLowerCase();
+  const filtered = allBarang.filter(b => !q || (b.nama || "").toLowerCase().includes(q) || String(b.barcode || "").includes(q));
+  const maxPage = Math.max(1, Math.ceil(filtered.length / KASIR_LIST_PER_PAGE));
+  kasirListPageNum = Math.min(maxPage, Math.max(1, kasirListPageNum + delta));
+  renderKasirBarangList();
+}
+
+function renderKasirBarangList() {
+  const tbody = document.getElementById("kasir-list-tbody");
+  if (!tbody) return;
+  const q = (document.getElementById("kasir-list-search").value || "").trim().toLowerCase();
+  const filtered = allBarang.filter(b => !q || (b.nama || "").toLowerCase().includes(q) || String(b.barcode || "").includes(q));
+
+  const maxPage = Math.max(1, Math.ceil(filtered.length / KASIR_LIST_PER_PAGE));
+  kasirListPageNum = Math.min(kasirListPageNum, maxPage);
+  const start = (kasirListPageNum - 1) * KASIR_LIST_PER_PAGE;
+  const pageItems = filtered.slice(start, start + KASIR_LIST_PER_PAGE);
+
+  if (pageItems.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:14px; text-align:center; color:#888; font-size:12.5px;">Barang tidak ditemukan</td></tr>';
+  } else {
+    tbody.innerHTML = pageItems.map((b, idx) => `
+      <tr>
+        <td class="col-no">${start + idx + 1}</td>
+        <td style="font-family:monospace;">${escapeHtml(String(b.barcode || ''))}</td>
+        <td>${escapeHtml(b.nama)}</td>
+        <td style="text-align:right;">${rupiah(b.harga_jual)}</td>
+        <td style="text-align:right;"><button class="add-mini-btn" onclick="addItem(allBarang.find(x=>x.row===${b.row}), 1)">+ Tambah</button></td>
+      </tr>
+    `).join("");
+  }
+
+  document.getElementById("kasir-list-info").textContent =
+    `Menampilkan ${filtered.length === 0 ? 0 : start + 1}-${Math.min(start + KASIR_LIST_PER_PAGE, filtered.length)} dari ${filtered.length} entries`;
+  document.getElementById("kasir-list-pageinfo").textContent = kasirListPageNum + " / " + maxPage;
+}
+
+function findByBarcode(code) {
+  return allBarang.find(b => String(b.barcode) === String(code).trim());
+}
+function searchByName(text) {
+  const q = text.trim().toLowerCase();
+  if (!q) return [];
+  return allBarang.filter(b => (b.nama || "").toLowerCase().includes(q)).slice(0, 8);
+}
+
+// ==================== INPUT KODE BARANG (baris atas) ====================
+const suggestBox = document.getElementById("suggest-box");
+
+function bindInputRow() {
+  const kodeInput = document.getElementById("kode-input");
+  const qtyInput = document.getElementById("qty-input");
+  if (!kodeInput) return;
+
+  let scanAutoTimer = null;
+  kodeInput.addEventListener("input", () => {
+    const val = kodeInput.value;
+    if (scanAutoTimer) { clearTimeout(scanAutoTimer); scanAutoTimer = null; }
+
+    if (/^\d{8,}$/.test(val.trim())) { suggestBox.style.display = "none"; }
+    else {
+      const matches = searchByName(val);
+      if (matches.length === 0) { suggestBox.style.display = "none"; }
+      else {
+        suggestBox.innerHTML = matches.map(b => `
+          <div data-row="${b.row}">${escapeHtml(b.nama)}<div class="harga-mini">${rupiah(b.harga_jual)} · stok ${b.stok}</div></div>
+        `).join("");
+        suggestBox.style.display = "block";
+        const rect = kodeInput.getBoundingClientRect();
+        suggestBox.style.top = (window.scrollY + rect.bottom) + "px";
+        suggestBox.style.left = (window.scrollX + rect.left) + "px";
+      }
+    }
+
+    // Deteksi otomatis untuk scanner barcode yang TIDAK mengirim tombol Enter setelah scan.
+    // Kalau teks yang diketik/discan persis cocok dengan barcode barang, otomatis dianggap seperti tekan Enter.
+    const trimmed = val.trim();
+    if (trimmed) {
+      scanAutoTimer = setTimeout(() => {
+        if (kodeInput.value.trim() !== trimmed) return; // sudah berubah lagi, batalkan
+        const barang = findByBarcode(trimmed);
+        if (barang) {
+          addItem(barang, Number(qtyInput.value) || 1);
+          kodeInput.value = "";
+          suggestBox.style.display = "none";
+          kodeInput.focus();
+        }
+      }, 150); // beri jeda singkat supaya tidak auto-submit di tengah proses scan/ketik
+    }
+  });
+
+  kodeInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    if (scanAutoTimer) { clearTimeout(scanAutoTimer); scanAutoTimer = null; }
+    const val = kodeInput.value.trim();
+    if (!val) return;
+    const barang = findByBarcode(val);
+    if (barang) {
+      addItem(barang, Number(qtyInput.value) || 1);
+      kodeInput.value = "";
+      suggestBox.style.display = "none";
+    } else {
+      showStatus('Barang dengan kode "' + val + '" tidak ditemukan', "error");
+    }
+    kodeInput.focus();
+  });
+
+  // Enter di kolom Qty: tutup keyboard mobile & fokus balik ke kode barang
+  qtyInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    qtyInput.blur();
+    kodeInput.focus();
+  });
+
+  kodeInput.focus();
+}
+
+suggestBox.addEventListener("click", (e) => {
+  const target = e.target.closest("[data-row]");
+  if (!target) return;
+  const row = Number(target.dataset.row);
+  const barang = allBarang.find(b => b.row === row);
+  const qtyInput = document.getElementById("qty-input");
+  if (barang) addItem(barang, Number(qtyInput.value) || 1);
+  suggestBox.style.display = "none";
+  document.getElementById("kode-input").focus();
+});
+
+document.addEventListener("click", (e) => {
+  if (!suggestBox.contains(e.target) && e.target.id !== "kode-input") {
+    suggestBox.style.display = "none";
+  }
+});
+
+// ==================== KELOLA KERANJANG ====================
+function addItem(barang, qty) {
+  const existing = cart.find(c => c.row === barang.row);
+  if (barang.stok <= 0 || (existing && existing.qty + qty > barang.stok)) {
+    showStatus(barang.nama + " " + (barang.stok <= 0 ? "stok habis" : "melebihi stok") + " - masuk sebagai pre-order", "success");
+  }
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cart.push({ row: barang.row, barcode: barang.barcode, nama: barang.nama, harga_jual: barang.harga_jual, qty: qty, stok: barang.stok });
+  }
+  renderCart();
+  clearStatus();
+}
+
+function removeItem(row) {
+  cart = cart.filter(c => c.row !== row);
+  renderCart();
+}
+
+function editQty(row, newQty) {
+  const item = cart.find(c => c.row === row);
+  if (!item) return;
+  newQty = Number(newQty);
+  if (newQty <= 0) { removeItem(row); return; }
+  item.qty = newQty;
+  renderCart();
+}
+
+function renderCart() {
+  const body = document.getElementById("cart-body");
+  const rowsHtml = cart.map((item, idx) => `
+    <tr>
+      <td class="col-no">${idx + 1}</td>
+      <td colspan="2">${escapeHtml(item.nama)} <span style="color:#888; font-size:11.5px;">(${escapeHtml(String(item.barcode))})</span></td>
+      <td class="col-jumlah text-right">${rupiah(item.harga_jual)}</td>
+      <td class="col-qty"><input type="number" min="1" value="${item.qty}" onchange="editQty(${item.row}, this.value)" style="width:60px;"></td>
+      <td class="col-jumlah text-right">${rupiah(item.harga_jual * item.qty)}</td>
+      <td class="col-action">
+        <button class="action-link hapus" onclick="removeItem(${item.row})">Hapus</button>
+      </td>
+    </tr>
+  `).join("");
+
+  const inputRowHtml = `
+    <tr class="input-row">
+      <td class="col-no">-</td>
+      <td colspan="2"><input id="kode-input" type="text" placeholder="Scan atau ketik kode/nama barang, lalu Enter" autocomplete="off" enterkeyhint="done"></td>
+      <td class="col-jumlah">&nbsp;</td>
+      <td><input id="qty-input" type="number" inputmode="numeric" enterkeyhint="done" value="1" min="1"></td>
+      <td class="col-jumlah">&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  `;
+
+  body.innerHTML = rowsHtml + inputRowHtml;
+  bindInputRow();
+  updateSummary();
+  document.getElementById("bayar-btn").disabled = cart.length === 0;
+}
+
+// ==================== RINGKASAN ====================
+function updateSummary() {
+  const subtotalBarang = cart.reduce((sum, item) => sum + (item.harga_jual * item.qty), 0);
+  const extraTotal = extraItems.reduce((sum, ex) => sum + (Number(ex.harga) || 0), 0);
+  const subtotal = subtotalBarang + extraTotal;
+  const diskon = Number(document.getElementById("diskon-input").value) || 0;
+  const total = Math.max(0, subtotal - diskon);
+  const bayar = Number(document.getElementById("bayar-input").value) || 0;
+  const kembali = Math.max(0, bayar - total);
+
+  document.getElementById("subtotal-cell").textContent = rupiah(subtotal);
+  document.getElementById("total-cell").textContent = rupiah(total);
+  document.getElementById("kembali-cell").textContent = rupiah(kembali);
+
+  return { subtotal, diskon, total, bayar, kembali, extraTotal };
+}
+document.getElementById("diskon-input").addEventListener("input", updateSummary);
+document.getElementById("diskon-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); e.target.blur(); }
+});
+
+// ==================== BIAYA TAMBAHAN ====================
+const HARGA_PER_GRAM = 79; // berat (gram) x Rp79 = harga otomatis (opsional, boleh dikosongkan)
+
+function addExtraRow() {
+  extraItems.push({ id: extraIdCounter++, nama: "", berat: "", harga: 0 });
+  renderExtraTable();
+}
+function removeExtraRow(id) {
+  extraItems = extraItems.filter(ex => ex.id !== id);
+  renderExtraTable();
+  updateSummary();
+}
+function updateExtraField(id, field, value) {
+  const ex = extraItems.find(e => e.id === id);
+  if (!ex) return;
+  if (field === "berat") {
+    ex.berat = value === "" ? "" : (Number(value) || 0);
+    // Kalau berat diisi, harga otomatis dihitung (berat x Rp79, dibulatkan ke bawah per 100)
+    if (ex.berat !== "") {
+      ex.harga = Math.floor((ex.berat * HARGA_PER_GRAM) / 100) * 100;
+    }
+    // Update input harga langsung tanpa render ulang tabel, supaya fokus ketik di kolom berat tidak hilang
+    const hargaInput = document.querySelector(`input[data-harga-id="${id}"]`);
+    if (hargaInput) hargaInput.value = ex.harga;
+  } else if (field === "harga") {
+    ex.harga = Number(value) || 0;
+  } else {
+    ex[field] = value;
+  }
+  updateSummary();
+}
+function renderExtraTable() {
+  const tbody = document.getElementById("extra-tbody");
+  if (extraItems.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="padding:10px; text-align:center; color:#888; font-size:12.5px; border:1px solid #ccc;">Belum ada biaya tambahan</td></tr>';
+    return;
+  }
+  tbody.innerHTML = extraItems.map(ex => `
+    <tr>
+      <td style="border:1px solid #ccc; padding:4px;">
+        <input type="text" value="${escapeHtml(ex.nama)}" placeholder="Contoh: Ongkos kirim"
+          style="width:100%; border:1px solid #aaa; padding:5px 7px; font-size:13px; border-radius:3px;"
+          oninput="updateExtraField(${ex.id}, 'nama', this.value)">
+      </td>
+      <td style="border:1px solid #ccc; padding:4px;">
+        <input type="number" value="${ex.berat === undefined ? '' : ex.berat}" min="0" placeholder="opsional"
+          style="width:100%; border:1px solid #aaa; padding:5px 7px; font-size:13px; border-radius:3px; text-align:right;"
+          oninput="updateExtraField(${ex.id}, 'berat', this.value)">
+      </td>
+      <td style="border:1px solid #ccc; padding:4px;">
+        <input type="number" value="${ex.harga}" min="0" placeholder="0" data-harga-id="${ex.id}"
+          style="width:100%; border:1px solid #aaa; padding:5px 7px; font-size:13px; border-radius:3px; text-align:right;"
+          oninput="updateExtraField(${ex.id}, 'harga', this.value)">
+      </td>
+      <td style="border:1px solid #ccc; padding:4px; text-align:center;">
+        <button class="action-link hapus" onclick="removeExtraRow(${ex.id})">Hapus</button>
+      </td>
+    </tr>
+  `).join("");
+}
+renderExtraTable();
+document.getElementById("bayar-input").addEventListener("input", updateSummary);
+document.getElementById("bayar-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); e.target.blur(); }
+});
+
+// ==================== CHECKOUT ====================
+document.getElementById("bayar-btn").addEventListener("click", async () => {
+  if (cart.length === 0) return;
+  let { subtotal, diskon, total, bayar, kembali } = updateSummary();
+  // Kalau bayar dikosongkan / 0, anggap pembayaran pas (bayar = total belanja)
+  if (bayar <= 0) {
+    bayar = total;
+    kembali = 0;
+    document.getElementById("bayar-input").value = total;
+  }
+  if (bayar < total) { showStatus("Uang bayar kurang dari total", "error"); return; }
+
+  const btn = document.getElementById("bayar-btn");
+  btn.disabled = true;
+  btn.textContent = "Memproses...";
+
+  const items = cart.map(item => ({ row: item.row, qty: item.qty }));
+  const itemsForReceipt = cart.map(i => ({ nama: i.nama, harga_jual: i.harga_jual, qty: i.qty }));
+  const extraForReceipt = extraItems.filter(ex => ex.nama || ex.harga);
+  const metode = document.getElementById("metode-input").value || "Cash";
+
+  try {
+    if (!navigator.onLine) throw { offline: true };
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "checkout", items, subtotal, diskon, total, bayar, kembali, extra: extraForReceipt, kasir: NAMA_KASIR, metode })
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Checkout gagal");
+
+    const gagal = (json.results || []).filter(r => !r.success);
+    if (gagal.length > 0) {
+      showStatus("Sebagian gagal diproses, silakan cek ulang.", "error");
+      await loadBarang();
+    } else {
+      showReceipt({ no_struk: json.no_struk, tanggal: json.tanggal, items: itemsForReceipt, extra: extraForReceipt, subtotal, diskon, total, bayar, kembali, metode });
+      resetTransaksi();
+      await loadBarang();
+    }
+  } catch (err) {
+    if (err && err.offline === true || (err instanceof TypeError)) {
+      // internet putus / gagal jaringan -> simpan transaksi lokal dulu, jangan hilang
+      const payload = { action: "checkout", items, subtotal, diskon, total, bayar, kembali, extra: extraForReceipt, kasir: NAMA_KASIR, metode };
+      const tempNoStruk = antrikanTransaksiOffline(payload, itemsForReceipt, extraForReceipt);
+      // kurangi stok lokal secara optimis biar kasir tetap bisa lihat sisa stok kira-kira
+      cart.forEach(ci => {
+        const b = allBarang.find(x => x.row === ci.row);
+        if (b) b.stok -= ci.qty;
+      });
+      showReceipt({ no_struk: tempNoStruk, tanggal: new Date().toISOString(), items: itemsForReceipt, extra: extraForReceipt, subtotal, diskon, total, bayar, kembali, metode, offline: true });
+      resetTransaksi();
+      showToast("Tidak ada koneksi — transaksi disimpan & akan disinkron otomatis", "error");
+    } else {
+      showStatus("Gagal checkout: " + err.message, "error");
+    }
+  } finally {
+    btn.textContent = "Proses Bayar";
+    btn.disabled = cart.length === 0;
+  }
+});
+
+document.getElementById("reset-btn").addEventListener("click", resetTransaksi);
+function resetTransaksi() {
+  cart = [];
+  extraItems = [];
+  document.getElementById("diskon-input").value = 0;
+  document.getElementById("bayar-input").value = 0;
+  document.getElementById("metode-input").value = "Cash";
+  renderCart();
+  renderExtraTable();
+  updateSummary();
+  setMetaAwal();
+}
+
+function showStatus(msg, type) {
+  const el = document.getElementById("status-msg");
+  el.textContent = msg;
+  el.className = type;
+}
+function clearStatus() {
+  document.getElementById("status-msg").textContent = "";
+  document.getElementById("status-msg").className = "";
+}
+function showToast(msg, type) {
+  const el = document.getElementById("status-toast");
+  el.textContent = msg;
+  el.className = type;
+  el.style.display = "block";
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { el.style.display = "none"; }, 3000);
+}
+
+// ==================== STRUK ====================
+function showReceipt(trx) {
+  const tokoSet = loadTokoSetting();
+  const tglObj = trx.tanggal ? new Date(trx.tanggal) : new Date();
+  const tglStr = String(tglObj.getDate()).padStart(2,'0') + "-" + String(tglObj.getMonth()+1).padStart(2,'0') + "-" + tglObj.getFullYear()
+    + " " + String(tglObj.getHours()).padStart(2,'0') + ":" + String(tglObj.getMinutes()).padStart(2,'0');
+
+  let html = `
+    <div style="text-align:center; font-weight:700; font-size:14px; margin-bottom:2px;">${TOKO_NAMA.toUpperCase()}</div>
+  `;
+  if (trx.offline) {
+    html += `<div style="text-align:center; font-size:10px; background:#fff3d6; color:#6b4d00; padding:2px 4px; margin:2px 0; border-radius:3px;">⚠ Belum tersinkron ke server</div>`;
+  }
+  if (tokoSet.alamat) {
+    html += `<div style="text-align:center; font-size:10.5px;">${escapeHtml(tokoSet.alamat)}</div>`;
+  }
+  if (tokoSet.telp) {
+    html += `<div style="text-align:center; font-size:10.5px;">Telp: ${escapeHtml(tokoSet.telp)}</div>`;
+  }
+  html += `
+    <div style="text-align:center; font-size:11px; margin-bottom:3px;">Struk Belanja</div>
+    <div style="border-top:1px dashed #999; margin:3px 0;"></div>
+    <div>No: ${trx.no_struk}</div>
+    <div>${tglStr}</div>
+    <div>Kasir: ${escapeHtml(NAMA_KASIR)}</div>
+    <div style="border-top:1px dashed #999; margin:3px 0;"></div>
+  `;
+  trx.items.forEach(it => {
+    html += `<div style="display:flex; justify-content:space-between;"><span>${escapeHtml(it.nama)}</span></div>`;
+    html += `<div style="display:flex; justify-content:space-between; color:#555;"><span>${it.qty} x ${rupiah(it.harga_jual)}</span><span>${rupiah(it.harga_jual * it.qty)}</span></div>`;
+  });
+  if (trx.extra && trx.extra.length > 0) {
+    html += `<div style="border-top:1px dashed #999; margin:3px 0;"></div>`;
+    trx.extra.forEach(ex => {
+      html += `<div style="display:flex; justify-content:space-between;"><span>${escapeHtml(ex.nama || "Biaya tambahan")}</span><span>${rupiah(ex.harga)}</span></div>`;
+    });
+  }
+  html += `<div style="border-top:1px dashed #999; margin:3px 0;"></div>`;
+  html += `<div style="display:flex; justify-content:space-between;"><span>Subtotal</span><span>${rupiah(trx.subtotal)}</span></div>`;
+  html += `<div style="display:flex; justify-content:space-between;"><span>Diskon</span><span>${rupiah(trx.diskon)}</span></div>`;
+  html += `<div style="display:flex; justify-content:space-between; font-weight:700;"><span>Total</span><span>${rupiah(trx.total)}</span></div>`;
+  html += `<div style="display:flex; justify-content:space-between;"><span>Bayar</span><span>${rupiah(trx.bayar)}</span></div>`;
+  html += `<div style="display:flex; justify-content:space-between;"><span>Kembali</span><span>${rupiah(trx.kembali)}</span></div>`;
+  html += `<div style="display:flex; justify-content:space-between;"><span>Metode</span><span>${escapeHtml(trx.metode || "Cash")}</span></div>`;
+  html += `<div style="border-top:1px dashed #999; margin:3px 0;"></div>`;
+  html += `<div style="text-align:center; font-size:11px;">${escapeHtml(tokoSet.footer || "Terima kasih telah berbelanja")}<br>di ${TOKO_NAMA}</div>`;
+  html += `<div style="height:6mm;"></div>`; // jarak kosong tipis di bawah supaya teks terakhir tidak ikut terpotong saat kertas dipotong/disobek
+
+  document.getElementById("receipt-content").innerHTML = html;
+  document.getElementById("receipt-content").dataset.noStruk = trx.no_struk || "struk";
+  document.getElementById("receipt-overlay").style.display = "flex";
+}
+function closeReceipt() { document.getElementById("receipt-overlay").style.display = "none"; }
+
+// Guard supaya window.print() tidak terpanggil berkali-kali (penyebab printer "nyetak terus")
+let isPrinting = false;
+function printReceipt() {
+  if (isPrinting) return; // cegah klik ganda / trigger tumpuk selagi dialog print masih terbuka
+  isPrinting = true;
+  const btn = document.getElementById("print-receipt-btn");
+  if (btn) { btn.disabled = true; btn.style.opacity = "0.6"; }
+  window.print();
+}
+window.addEventListener("afterprint", () => {
+  isPrinting = false;
+  const btn = document.getElementById("print-receipt-btn");
+  if (btn) { btn.disabled = false; btn.style.opacity = "1"; }
+});
+
+// ==================== SIMPAN STRUK SEBAGAI PDF ====================
+function simpanStrukPdf() {
+  const btn = document.getElementById("pdf-receipt-btn");
+  const el = document.getElementById("receipt-content");
+  const lebarMm = getStrukPaperMm(); // 58 atau 80
+  const noStruk = (document.getElementById("receipt-content").dataset.noStruk) || "struk";
+  const asli = btn.textContent;
+  btn.textContent = "Menyimpan...";
+  btn.disabled = true;
+  const opt = {
+    margin: 0,
+    filename: `Struk-${noStruk}.pdf`,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 3 },
+    jsPDF: { unit: "mm", format: [lebarMm, Math.max(120, el.scrollHeight * lebarMm / el.offsetWidth)], orientation: "portrait" }
+  };
+  html2pdf().set(opt).from(el).save().then(() => {
+    btn.textContent = asli;
+    btn.disabled = false;
+  }).catch(() => {
+    btn.textContent = asli;
+    btn.disabled = false;
+    showToast("Gagal membuat PDF", "error");
+  });
+}
+
+// ==================== PENGATURAN UKURAN KERTAS STRUK ====================
+const STRUK_PAPER_KEY = "ffd_struk_paper"; // "58" atau "80"
+function getStrukPaperMm() {
+  return localStorage.getItem(STRUK_PAPER_KEY) === "80" ? 80 : 58;
+}
+function applyStrukPaperSetting() {
+  const mm = getStrukPaperMm();
+  document.documentElement.style.setProperty("--struk-paper", mm + "mm");
+  const radio = document.querySelector(`input[name="struk-paper-radio"][value="${mm}"]`);
+  if (radio) radio.checked = true;
+}
+function setStrukPaper(mm) {
+  localStorage.setItem(STRUK_PAPER_KEY, String(mm));
+  applyStrukPaperSetting();
+  showToast("Ukuran kertas struk diset ke " + mm + "mm", "success");
+}
+
+// ==================== MODE OFFLINE (checkout tersimpan lokal saat internet putus) ====================
+const OFFLINE_QUEUE_KEY = "ffd_offline_queue";
+function getOfflineQueue() {
+  try { return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY)) || []; } catch (e) { return []; }
+}
+function saveOfflineQueue(q) {
+  localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(q));
+  updateOfflineBadge();
+}
+function updateOfflineBadge() {
+  const q = getOfflineQueue();
+  const badge = document.getElementById("offline-badge");
+  const text = document.getElementById("offline-badge-text");
+  if (q.length > 0) {
+    badge.classList.add("show");
+    text.textContent = (navigator.onLine ? "Menyinkronkan..." : "Mode offline") + " — " + q.length + " transaksi menunggu sinkron";
+  } else {
+    badge.classList.remove("show");
+  }
+}
+
+function antrikanTransaksiOffline(payload, itemsForReceipt, extraForReceipt) {
+  const q = getOfflineQueue();
+  const tempNoStruk = "OFFLINE-" + Date.now();
+  q.push({ tempNoStruk, payload, itemsForReceipt, extraForReceipt, waktu: new Date().toISOString() });
+  saveOfflineQueue(q);
+  return tempNoStruk;
+}
+
+let sedangSinkron = false;
+async function trySyncOfflineQueue() {
+  if (sedangSinkron) return;
+  const q = getOfflineQueue();
+  if (q.length === 0) return;
+  if (!navigator.onLine) { showToast("Belum ada koneksi internet", "error"); return; }
+
+  sedangSinkron = true;
+  updateOfflineBadge();
+  let berhasil = 0;
+
+  while (getOfflineQueue().length > 0) {
+    const current = getOfflineQueue();
+    const item = current[0];
+    try {
+      const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(item.payload) });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || "Gagal sinkron");
+      const sisa = getOfflineQueue();
+      sisa.shift();
+      saveOfflineQueue(sisa);
+      berhasil++;
+    } catch (err) {
+      break; // internet putus lagi di tengah jalan / gagal -> berhenti, sisanya tetap diantre
+    }
+  }
+
+  sedangSinkron = false;
+  updateOfflineBadge();
+  if (berhasil > 0) {
+    showToast(berhasil + " transaksi berhasil disinkronkan", "success");
+    await loadBarang();
+  }
+  const masihAda = getOfflineQueue().length;
+  if (masihAda > 0) {
+    showToast(masihAda + " transaksi masih menunggu koneksi", "error");
+  }
+}
+
+window.addEventListener("online", () => { updateOfflineBadge(); trySyncOfflineQueue(); });
+window.addEventListener("offline", updateOfflineBadge);
+setInterval(() => { if (navigator.onLine) trySyncOfflineQueue(); }, 30000);
+
+// ==================== RIWAYAT (halaman Transaksi) ====================
+let riwayatData = [];
+async function loadRiwayat() {
+  const listEl = document.getElementById("riwayat-list");
+  listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#777; font-size:13px;">Memuat riwayat...</div>';
+  try {
+    const res = await fetch(API_URL + "?action=getRiwayat&limit=50");
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal memuat riwayat");
+    riwayatData = json.data;
+    renderRiwayatList();
+  } catch (err) {
+    listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#c0392b; font-size:13px;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function renderRiwayatList() {
+  const listEl = document.getElementById("riwayat-list");
+  if (!riwayatData || riwayatData.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#777; font-size:13px;">Belum ada transaksi</div>';
+    return;
+  }
+
+  const sortMode = document.getElementById("riwayat-sort-select").value;
+  const rows = riwayatData.slice();
+  if (sortMode === "total_desc") rows.sort((a, b) => b.total - a.total);
+  else if (sortMode === "total_asc") rows.sort((a, b) => a.total - b.total);
+  else rows.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+  listEl.innerHTML = rows.map(trx => {
+      const tglObj = new Date(trx.tanggal);
+      const tglStr = String(tglObj.getDate()).padStart(2,'0') + "-" + String(tglObj.getMonth()+1).padStart(2,'0') + "-" + tglObj.getFullYear()
+        + " " + String(tglObj.getHours()).padStart(2,'0') + ":" + String(tglObj.getMinutes()).padStart(2,'0');
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 6px; border-bottom:1px solid #eee;">
+          <div>
+            <div style="font-size:13px; font-weight:700;">${escapeHtml(trx.no_struk)}</div>
+            <div style="font-size:11.5px; color:#777;">${tglStr} · ${escapeHtml(trx.kasir || '')} · <span style="color:${trx.status==='batal'?'#c0392b':'#2ea55f'};">${escapeHtml(trx.status||'')}</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="font-size:13.5px; font-weight:800; color:#2ea55f;">${rupiah(trx.total)}</div>
+            <button class="action-link edit" onclick="lihatStrukLama('${trx.no_struk}')">Lihat</button>
+            ${trx.status !== 'batal' ? `<button class="action-link hapus" onclick="hapusTransaksi('${trx.no_struk}')">Hapus</button>` : ''}
+          </div>
+        </div>
+      `;
+    }).join("");
+}
+
+async function lihatStrukLama(noStruk) {
+  try {
+    const res = await fetch(API_URL + "?action=getTransaksiDetail&no_struk=" + encodeURIComponent(noStruk));
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal memuat detail transaksi");
+    showReceipt(json.data);
+  } catch (err) {
+    showToast("Gagal memuat struk: " + err.message, "error");
+  }
+}
+
+async function hapusTransaksi(noStruk) {
+  if (!confirm(`Hapus transaksi ${noStruk}? Stok barang yang terjual akan dikembalikan.`)) return;
+  try {
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteTransaksi", no_struk: noStruk }) });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal menghapus transaksi");
+    showToast("Transaksi berhasil dihapus & stok dikembalikan.", "success");
+    await loadBarang();
+    await loadRiwayat();
+  } catch (err) {
+    showToast("Gagal menghapus transaksi: " + err.message, "error");
+  }
+}
+
+// ==================== MASTER KATEGORI ====================
+let kategoriList = [];
+async function loadKategori() {
+  try {
+    const res = await fetch(API_URL + "?action=getKategori");
+    const json = await res.json();
+    if (json.success) kategoriList = json.data;
+  } catch (err) { /* diam-diam gagal, tabel akan tampil kosong */ }
+}
+
+function renderKategoriTable() {
+  const tbody = document.getElementById("kategori-tbody");
+  if (kategoriList.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" style="padding:16px; text-align:center; color:#888;">Belum ada kategori</td></tr>';
+    return;
+  }
+  tbody.innerHTML = kategoriList.map((k, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${escapeHtml(k.nama)}</td>
+      <td style="text-align:right;">
+        <button class="action-link edit" onclick="editKategoriPrompt(${k.row}, '${escapeHtml(k.nama).replace(/'/g,"\\'")}')">Edit</button>
+        <button class="action-link hapus" onclick="hapusKategori(${k.row})">Hapus</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+async function submitKategori() {
+  const input = document.getElementById("kategori-input");
+  const nama = input.value.trim();
+  const statusEl = document.getElementById("kategori-status");
+  if (!nama) { statusEl.innerHTML = '<span style="color:#c0392b;">Nama kategori wajib diisi.</span>'; return; }
+  if (kategoriList.some(k => k.nama.toLowerCase() === nama.toLowerCase())) {
+    statusEl.innerHTML = '<span style="color:#c0392b;">Kategori sudah ada.</span>'; return;
+  }
+  statusEl.textContent = "Menyimpan...";
+  try {
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "addKategori", nama }) });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal menambah kategori");
+    input.value = "";
+    statusEl.textContent = "";
+    await loadKategori();
+    renderKategoriTable();
+    showToast("Kategori ditambahkan.", "success");
+  } catch (err) {
+    statusEl.innerHTML = '<span style="color:#c0392b;">' + escapeHtml(err.message) + '</span>';
+  }
+}
+
+async function editKategoriPrompt(row, namaLama) {
+  const namaBaru = prompt("Ubah nama kategori:", namaLama);
+  if (namaBaru === null || !namaBaru.trim() || namaBaru.trim() === namaLama) return;
+  try {
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateKategori", row, nama: namaBaru.trim() }) });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal mengubah kategori");
+    await loadKategori();
+    renderKategoriTable();
+    showToast("Kategori diperbarui.", "success");
+  } catch (err) {
+    showToast("Gagal: " + err.message, "error");
+  }
+}
+
+async function hapusKategori(row) {
+  if (!confirm("Hapus kategori ini?")) return;
+  try {
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteKategori", row }) });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal menghapus kategori");
+    await loadKategori();
+    renderKategoriTable();
+    showToast("Kategori dihapus.", "success");
+  } catch (err) {
+    showToast("Gagal: " + err.message, "error");
+  }
+}
+
+// ==================== DAFTAR BARCODE ====================
+function renderBarcodeTable() {
+  const q = document.getElementById("barcode-search").value.trim().toLowerCase();
+  const filtered = allBarang.filter(b => !q || (b.nama || "").toLowerCase().includes(q) || String(b.barcode || "").includes(q));
+  const tbody = document.getElementById("barcode-tbody");
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="padding:16px; text-align:center; color:#888;">Barang tidak ditemukan</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map((b, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td style="font-family:monospace;">${escapeHtml(String(b.barcode || ''))}</td>
+      <td>${escapeHtml(b.nama)}</td>
+      <td style="text-align:right;">${rupiah(b.harga_jual)}</td>
+    </tr>
+  `).join("");
+}
+
+function printBarcodeList() {
+  const win = window.open("", "_blank");
+  const rows = allBarang.map((b, idx) => `<tr><td>${idx+1}</td><td>${escapeHtml(String(b.barcode||''))}</td><td>${escapeHtml(b.nama)}</td><td style="text-align:right;">${rupiah(b.harga_jual)}</td></tr>`).join("");
+  win.document.write(`
+    <html><head><title>Daftar Barcode - ${TOKO_NAMA}</title>
+    <style>body{font-family:Arial,sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ccc;padding:6px 8px;font-size:12px;text-align:left;} th{background:#eee;}</style>
+    </head><body>
+    <h3>Daftar Barcode - ${TOKO_NAMA}</h3>
+    <table><thead><tr><th>No</th><th>Barcode</th><th>Nama Barang</th><th>Harga Jual</th></tr></thead><tbody>${rows}</tbody></table>
+    </body></html>
+  `);
+  win.document.close();
+  win.print();
+}
+
+// ==================== DAFTAR BARANG (halaman Produk) ====================
+let daftarPageNum = 1;
+
+document.getElementById("daftar-search").addEventListener("input", () => { daftarPageNum = 1; renderDaftarTable(); });
+document.getElementById("perpage-select").addEventListener("change", () => { daftarPageNum = 1; renderDaftarTable(); });
+
+function daftarPage(delta) {
+  const perPage = Number(document.getElementById("perpage-select").value);
+  const q = document.getElementById("daftar-search").value.trim().toLowerCase();
+  const filtered = allBarang.filter(b => !q || (b.nama || "").toLowerCase().includes(q) || String(b.barcode || "").includes(q));
+  const maxPage = Math.max(1, Math.ceil(filtered.length / perPage));
+  daftarPageNum = Math.min(maxPage, Math.max(1, daftarPageNum + delta));
+  renderDaftarTable();
+}
+
+function lihatBarcode(kode, nama) {
+  document.getElementById("barcode-view-nama").textContent = nama;
+  document.getElementById("barcode-view-kode").textContent = kode || "(belum ada kode)";
+  document.getElementById("barcode-view-overlay").style.display = "flex";
+}
+function closeBarcodeView() {
+  document.getElementById("barcode-view-overlay").style.display = "none";
+}
+
+function renderDaftarTable() {
+  const perPage = Number(document.getElementById("perpage-select").value) || 10;
+  const q = document.getElementById("daftar-search").value.trim().toLowerCase();
+  const filtered = allBarang.filter(b => !q || (b.nama || "").toLowerCase().includes(q) || String(b.barcode || "").includes(q));
+
+  const maxPage = Math.max(1, Math.ceil(filtered.length / perPage));
+  daftarPageNum = Math.min(daftarPageNum, maxPage);
+  const start = (daftarPageNum - 1) * perPage;
+  const pageItems = filtered.slice(start, start + perPage);
+
+  const tbody = document.getElementById("daftar-tbody");
+  if (pageItems.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" style="padding:20px; text-align:center; color:#888;">Barang tidak ditemukan</td></tr>';
+  } else {
+    tbody.innerHTML = pageItems.map((b, idx) => `
+      <tr>
+        <td>${start + idx + 1}</td>
+        <td style="font-family:monospace;">${escapeHtml(String(b.barcode || ''))}</td>
+        <td>${escapeHtml(b.nama)}</td>
+        <td style="text-align:right;">${b.stok_min}</td>
+        <td style="text-align:right;" class="${b.stok <= b.stok_min ? 'stok-habis' : ''}">${b.stok}</td>
+        <td style="text-align:right;">${b.stok_max}</td>
+        <td>${escapeHtml(satuanLabel(b.satuan_id))}</td>
+        <td class="kolom-harga" style="text-align:right;">${rupiah(b.harga_jual)}</td>
+        <td class="kolom-harga" style="text-align:right;">${rupiah(b.harga_beli)}</td>
+        <td style="text-align:center;"><button class="action-link edit" onclick="lihatBarcode('${escapeHtml(String(b.barcode||'')).replace(/'/g,"\\'")}', '${escapeHtml(b.nama).replace(/'/g,"\\'")}')">Lihat</button></td>
+        <td style="white-space:nowrap;">
+          <button class="action-link edit" onclick="openBarangForm('edit', ${b.row})">Edit</button>
+          <button class="action-link hapus" onclick="hapusBarang(${b.row})">Hapus</button>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  document.getElementById("daftar-info").textContent =
+    `Menampilkan ${filtered.length === 0 ? 0 : start + 1}-${Math.min(start + perPage, filtered.length)} dari ${filtered.length} entries`;
+  document.getElementById("daftar-pageinfo").textContent = daftarPageNum + " / " + maxPage;
+}
+
+// ==================== PENGATURAN: INFO TOKO ====================
+// Disimpan di localStorage browser (mengikuti pola satuan) karena sheet TOKO di backend masih konstanta tetap.
+const TOKO_SETTING_KEY = "ffd_toko_setting";
+
+function loadTokoSetting() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TOKO_SETTING_KEY) || "null");
+    if (saved && typeof saved === "object") return saved;
+  } catch (e) { /* abaikan */ }
+  return { nama: TOKO_NAMA, alamat: "", telp: "", singkatan: "FFD", kasir: "Administrator", footer: "Terima kasih telah berbelanja", font: "Arial" };
+}
+function saveTokoSetting(data) {
+  localStorage.setItem(TOKO_SETTING_KEY, JSON.stringify(data));
+}
+function applyStrukFont(fontName) {
+  const f = fontName || "Arial";
+  document.documentElement.style.setProperty("--struk-font", `"${f}"`);
+}
+function previewFontStruk() {
+  const el = document.getElementById("font-struk-preview");
+  const val = document.getElementById("set-font-struk").value.trim() || "Arial";
+  if (el) el.style.fontFamily = `"${val}", Arial, sans-serif`;
+}
+function resetFontStruk() {
+  document.getElementById("set-font-struk").value = "Arial";
+  previewFontStruk();
+  showToast("Font direset ke Arial (default). Klik 'Simpan Info Toko' untuk menerapkan.", "success");
+}
+
+function renderPengaturanToko() {
+  const t = loadTokoSetting();
+  document.getElementById("set-nama-toko").value = t.nama || "";
+  document.getElementById("set-alamat-toko").value = t.alamat || "";
+  document.getElementById("set-telp-toko").value = t.telp || "";
+  document.getElementById("set-singkatan-toko").value = t.singkatan || "";
+  document.getElementById("set-nama-kasir").value = t.kasir || "Administrator";
+  document.getElementById("set-footer-struk").value = t.footer || "Terima kasih telah berbelanja";
+  document.getElementById("set-font-struk").value = t.font || "Arial";
+  previewFontStruk();
+}
+
+function submitPengaturanToko() {
+  const statusEl = document.getElementById("pengaturan-toko-status");
+  const nama = document.getElementById("set-nama-toko").value.trim();
+  if (!nama) { statusEl.innerHTML = '<span style="color:#c0392b;">Nama toko wajib diisi.</span>'; return; }
+
+  const data = {
+    nama: nama,
+    alamat: document.getElementById("set-alamat-toko").value.trim(),
+    telp: document.getElementById("set-telp-toko").value.trim(),
+    singkatan: document.getElementById("set-singkatan-toko").value.trim() || "FFD",
+    kasir: document.getElementById("set-nama-kasir").value.trim() || "Administrator",
+    footer: document.getElementById("set-footer-struk").value.trim() || "Terima kasih telah berbelanja",
+    font: document.getElementById("set-font-struk").value.trim() || "Arial"
+  };
+  saveTokoSetting(data);
+  TOKO_NAMA = data.nama;
+  NAMA_KASIR = data.kasir;
+  applyStrukFont(data.font);
+  const metaKasirEl = document.getElementById("meta-kasir-nama");
+  if (metaKasirEl) metaKasirEl.textContent = NAMA_KASIR;
+  statusEl.innerHTML = '<span style="color:#2e7d32;">Tersimpan.</span>';
+  showToast("Info toko disimpan.", "success");
+}
+
+// ==================== PENGATURAN: MASTER SATUAN ====================
+function renderSatuanTable() {
+  const tbody = document.getElementById("satuan-tbody");
+  if (!tbody) return;
+  if (satuanList.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" style="padding:16px; text-align:center; color:#888;">Belum ada satuan</td></tr>';
+    return;
+  }
+  tbody.innerHTML = satuanList.map((s, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${escapeHtml(s)}</td>
+      <td style="text-align:right;">
+        <button class="action-link edit" onclick="editSatuanPrompt(${idx})">Edit</button>
+        <button class="action-link hapus" onclick="hapusSatuan(${idx})">Hapus</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function submitSatuan() {
+  const input = document.getElementById("satuan-input");
+  const nama = input.value.trim();
+  const statusEl = document.getElementById("satuan-status");
+  if (!nama) { statusEl.innerHTML = '<span style="color:#c0392b;">Nama satuan wajib diisi.</span>'; return; }
+  if (satuanList.some(s => s.toLowerCase() === nama.toLowerCase())) {
+    statusEl.innerHTML = '<span style="color:#c0392b;">Satuan sudah ada.</span>'; return;
+  }
+  satuanList.push(nama);
+  saveSatuanList(satuanList);
+  input.value = "";
+  statusEl.textContent = "";
+  renderSatuanTable();
+  showToast("Satuan ditambahkan.", "success");
+}
+
+function editSatuanPrompt(idx) {
+  const lama = satuanList[idx];
+  const baru = prompt("Ubah nama satuan:", lama);
+  if (baru === null) return;
+  const trimmed = baru.trim();
+  if (!trimmed) return;
+  if (satuanList.some((s, i) => i !== idx && s.toLowerCase() === trimmed.toLowerCase())) {
+    showToast("Nama satuan sudah dipakai.", "error");
+    return;
+  }
+  satuanList[idx] = trimmed;
+  saveSatuanList(satuanList);
+  renderSatuanTable();
+  showToast("Satuan diperbarui.", "success");
+}
+
+function hapusSatuan(idx) {
+  if (!confirm(`Hapus satuan "${satuanList[idx]}"?`)) return;
+  satuanList.splice(idx, 1);
+  saveSatuanList(satuanList);
+  renderSatuanTable();
+  showToast("Satuan dihapus.", "success");
+}
+
+// ==================== TOGGLE TAMPIL/SEMBUNYIKAN HARGA ====================
+function toggleHargaKolom(pageKey) {
+  const containerId = pageKey === "produk" ? "page-produk" : "page-laporan";
+  const btnId = pageKey === "produk" ? "produk-toggle-harga-btn" : "laporan-toggle-harga-btn";
+  const storageKey = "ffd_sembunyikan_harga_" + pageKey;
+
+  const container = document.getElementById(containerId);
+  const btn = document.getElementById(btnId);
+  const isHidden = container.classList.toggle("sembunyikan-harga");
+  btn.textContent = isHidden ? "👁 Tampilkan Harga" : "👁 Sembunyikan Harga";
+  localStorage.setItem(storageKey, isHidden ? "1" : "0");
+}
+
+function initHargaToggleState() {
+  ["produk", "laporan"].forEach(pageKey => {
+    const containerId = pageKey === "produk" ? "page-produk" : "page-laporan";
+    const btnId = pageKey === "produk" ? "produk-toggle-harga-btn" : "laporan-toggle-harga-btn";
+    const storageKey = "ffd_sembunyikan_harga_" + pageKey;
+    const container = document.getElementById(containerId);
+    const btn = document.getElementById(btnId);
+    if (localStorage.getItem(storageKey) === "1") {
+      container.classList.add("sembunyikan-harga");
+      btn.textContent = "👁 Tampilkan Harga";
+    }
+  });
+}
+let barangFormMode = "add"; // 'add' | 'edit'
+let barangFormRow = null;
+
+// ==================== MASTER SATUAN (Pcs/Box/dll) ====================
+// Disimpan di localStorage browser karena sheet backend belum punya tabel satuan.
+const SATUAN_STORAGE_KEY = "ffd_satuan_list";
+// Pemetaan untuk data lama yang masih tersimpan sebagai angka (mis. "3") di kolom satuan_id
+const SATUAN_LEGACY_MAP = { "1": "Pcs", "2": "Box", "3": "Pcs" };
+
+function loadSatuanList() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SATUAN_STORAGE_KEY) || "null");
+    if (Array.isArray(saved) && saved.length > 0) return saved;
+  } catch (e) { /* abaikan, pakai default */ }
+  return ["Pcs", "Box"];
+}
+function saveSatuanList(list) {
+  localStorage.setItem(SATUAN_STORAGE_KEY, JSON.stringify(list));
+}
+let satuanList = loadSatuanList();
+
+// Ubah nilai satuan_id (bisa berupa nama "Pcs"/"Box" atau angka lama) jadi label yang enak dibaca
+function satuanLabel(val) {
+  if (val === null || val === undefined || val === "") return "";
+  const s = String(val).trim();
+  if (/^\d+$/.test(s)) return SATUAN_LEGACY_MAP[s] || "Pcs";
+  return s;
+}
+
+function fillKategoriSatuanOptions(selectedKategori, selectedSatuan) {
+  const kategoriSel = document.getElementById("bf-kategori");
+  const satuanSel = document.getElementById("bf-satuan");
+
+  kategoriSel.innerHTML = '<option value="">-- Silahkan Pilih --</option>' +
+    kategoriList.map(k => `<option value="${escapeHtml(String(k.nama))}">${escapeHtml(String(k.nama))}</option>`).join("");
+  // Kalau nilai kategori barang yang diedit belum ada di daftar kategori (data lama), tetap tampilkan sebagai opsi
+  if (selectedKategori && !kategoriList.some(k => k.nama === selectedKategori)) {
+    kategoriSel.innerHTML += `<option value="${escapeHtml(String(selectedKategori))}">${escapeHtml(String(selectedKategori))}</option>`;
+  }
+
+  const selectedSatuanLabel = satuanLabel(selectedSatuan);
+  satuanSel.innerHTML = '<option value="">-- Silahkan Pilih --</option>' +
+    satuanList.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+  if (selectedSatuanLabel && !satuanList.includes(selectedSatuanLabel)) {
+    satuanSel.innerHTML += `<option value="${escapeHtml(selectedSatuanLabel)}">${escapeHtml(selectedSatuanLabel)}</option>`;
+  }
+
+  kategoriSel.value = selectedKategori || "";
+  satuanSel.value = selectedSatuanLabel || "";
+}
+
+function openBarangForm(mode, rowNum) {
+  barangFormMode = mode;
+  barangFormRow = rowNum || null;
+  document.getElementById("barang-form-status").textContent = "";
+
+  const b = mode === "edit" ? allBarang.find(x => x.row === rowNum) : null;
+
+  document.getElementById("barang-form-title").textContent = mode === "edit" ? "Edit Barang" : "Tambah Barang";
+  document.getElementById("bf-kode").value = b ? (b.barcode || "") : "";
+  document.getElementById("bf-nama").value = b ? (b.nama || "") : "";
+  document.getElementById("bf-stok-min").value = b ? (b.stok_min || 0) : 0;
+  document.getElementById("bf-stok-max").value = b ? (b.stok_max || 0) : 0;
+  document.getElementById("bf-stok").value = b ? (b.stok || 0) : 0;
+  document.getElementById("bf-harga-beli").value = b ? (b.harga_beli || 0) : 0;
+  document.getElementById("bf-harga-jual").value = b ? (b.harga_jual || 0) : 0;
+  document.getElementById("bf-berat").value = b ? (b.berat_gram || 0) : 0;
+  document.getElementById("bf-isi").value = b ? (b.isi_per_pack || 0) : 0;
+
+  fillKategoriSatuanOptions(b ? b.kategori_id : "", b ? b.satuan_id : "");
+
+  document.getElementById("barang-form-overlay").style.display = "flex";
+}
+
+function closeBarangForm() {
+  document.getElementById("barang-form-overlay").style.display = "none";
+}
+
+async function submitBarangForm() {
+  const nama = document.getElementById("bf-nama").value.trim();
+  if (!nama) {
+    document.getElementById("barang-form-status").innerHTML = '<span style="color:#c0392b;">Nama barang wajib diisi.</span>';
+    return;
+  }
+
+  const data = {
+    kategori_id: document.getElementById("bf-kategori").value,
+    satuan_id: document.getElementById("bf-satuan").value,
+    barcode: document.getElementById("bf-kode").value.trim(),
+    nama: nama,
+    stok_min: Number(document.getElementById("bf-stok-min").value) || 0,
+    stok_max: Number(document.getElementById("bf-stok-max").value) || 0,
+    stok: Number(document.getElementById("bf-stok").value) || 0,
+    harga_beli: Number(document.getElementById("bf-harga-beli").value) || 0,
+    harga_jual: Number(document.getElementById("bf-harga-jual").value) || 0,
+    berat_gram: Number(document.getElementById("bf-berat").value) || 0,
+    isi_per_pack: Number(document.getElementById("bf-isi").value) || 0
+  };
+
+  const btn = document.getElementById("barang-form-submit-btn");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan...";
+  document.getElementById("barang-form-status").textContent = "";
+
+  try {
+    const payload = barangFormMode === "edit"
+      ? { action: "updateBarang", row: barangFormRow, data }
+      : { action: "addBarang", data };
+
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal menyimpan barang");
+
+    closeBarangForm();
+    showToast(barangFormMode === "edit" ? "Barang berhasil diperbarui." : "Barang baru berhasil ditambahkan.", "success");
+    await loadBarang();
+  } catch (err) {
+    document.getElementById("barang-form-status").innerHTML = '<span style="color:#c0392b;">' + escapeHtml(err.message) + '</span>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Simpan";
+  }
+}
+
+async function hapusBarang(rowNum) {
+  const b = allBarang.find(x => x.row === rowNum);
+  const nama = b ? b.nama : "barang ini";
+  if (!confirm(`Hapus "${nama}" dari daftar produk? Tindakan ini tidak bisa dibatalkan.`)) return;
+
+  try {
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteBarang", row: rowNum }) });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal menghapus barang");
+    showToast("Barang berhasil dihapus.", "success");
+    await loadBarang();
+  } catch (err) {
+    showToast("Gagal menghapus barang: " + err.message, "error");
+  }
+}
+
+// ==================== NAVIGASI SIDEBAR ====================
+const ALL_PAGES = ["kasir", "dashboard", "laporan", "transaksi", "cektransaksi", "produk", "kategori", "barcode", "pengaturan"];
+
+document.querySelectorAll(".nav-item[data-page]").forEach(btn => {
+  btn.addEventListener("click", () => switchPage(btn.dataset.page));
+});
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+  if (confirm("Keluar dari aplikasi kasir?")) {
+    window.close();
+    switchPage("kasir");
+  }
+});
+
+function switchPage(page) {
+  ALL_PAGES.forEach(p => {
+    const el = document.getElementById("page-" + p);
+    if (el) el.style.display = p === page ? "" : "none";
+  });
+  document.querySelectorAll(".nav-item[data-page]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.page === page);
+  });
+  if (page === "dashboard") loadLaporan(currentRange);
+  if (page === "laporan") loadLaporanTabel();
+  if (page === "transaksi") loadRiwayat();
+  if (page === "kategori") renderKategoriTable();
+  if (page === "barcode") renderBarcodeTable();
+  if (page === "pengaturan") { renderPengaturanToko(); renderSatuanTable(); }
+}
+
+// ==================== TABEL LAPORAN PER TANGGAL ====================
+let laporanTabelData = [];
+async function loadLaporanTabel() {
+  const tbody = document.getElementById("laporan-tabel-tbody");
+  tbody.innerHTML = '<tr><td colspan="5" style="padding:16px; text-align:center; color:#888;">Memuat...</td></tr>';
+
+  const mulai = document.getElementById("lap-tgl-mulai").value;
+  const selesai = document.getElementById("lap-tgl-selesai").value;
+
+  let url = API_URL + "?action=getLaporanTabel";
+  if (mulai) url += "&mulai=" + encodeURIComponent(mulai);
+  if (selesai) url += "&selesai=" + encodeURIComponent(selesai);
+
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal memuat laporan");
+
+    const rows = json.data;
+    laporanTabelData = rows;
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="padding:16px; text-align:center; color:#888;">Belum ada data</td></tr>';
+    } else {
+      tbody.innerHTML = rows.map((r, idx) => {
+        const d = new Date(r.tanggal + "T00:00:00");
+        const tglStr = String(d.getDate()).padStart(2,'0') + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + d.getFullYear();
+        return `
+          <tr>
+            <td>${idx + 1}</td>
+            <td>${tglStr}</td>
+            <td class="kolom-harga" style="text-align:right;">Rp ${rupiah(r.total_omset)}</td>
+            <td class="kolom-harga" style="text-align:right; color:#2ea55f; font-weight:700;">Rp ${rupiah(r.total_laba)}</td>
+            <td style="text-align:right;"><button class="action-link edit" onclick="toggleLaporanDetail('${r.tanggal}', this)">Lihat Barang</button></td>
+          </tr>
+          <tr id="lap-detail-row-${r.tanggal}" style="display:none;">
+            <td colspan="5" style="padding:10px 14px; background:#fafafa;">
+              <div id="lap-detail-${r.tanggal}" style="font-size:12.5px; color:#888;">Memuat barang...</div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    const totalOmset = rows.reduce((s, r) => s + r.total_omset, 0);
+    const totalLaba = rows.reduce((s, r) => s + r.total_laba, 0);
+    document.getElementById("laporan-tabel-total-omset").textContent = "Rp " + rupiah(totalOmset);
+    document.getElementById("laporan-tabel-total-laba").textContent = "Rp " + rupiah(totalLaba);
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:16px; text-align:center; color:#c0392b;">' + escapeHtml(err.message) + '</td></tr>';
+  }
+}
+
+function exportLaporanCSV() {
+  if (!laporanTabelData || laporanTabelData.length === 0) {
+    showToast("Tidak ada data untuk diexport.", "error");
+    return;
+  }
+  let csv = "Tanggal,Total Omset,Total Laba\n";
+  laporanTabelData.forEach(r => {
+    csv += `${r.tanggal},${r.total_omset},${r.total_laba}\n`;
+  });
+  const totalOmset = laporanTabelData.reduce((s, r) => s + r.total_omset, 0);
+  const totalLaba = laporanTabelData.reduce((s, r) => s + r.total_laba, 0);
+  csv += `Total,${totalOmset},${totalLaba}\n`;
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "laporan_" + TOKO_NAMA.replace(/\s+/g, "_") + "_" + Utilities_todayStr() + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function Utilities_todayStr() {
+  const d = new Date();
+  return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+}
+
+function toggleLaporanDetail(tanggal, btn) {
+  const row = document.getElementById("lap-detail-row-" + tanggal);
+  const showing = row.style.display !== "none";
+  if (showing) {
+    row.style.display = "none";
+    btn.textContent = "Lihat Barang";
+  } else {
+    row.style.display = "";
+    btn.textContent = "Tutup";
+    loadLaporanItemHarian(tanggal);
+  }
+}
+
+async function loadLaporanItemHarian(tanggal) {
+  const box = document.getElementById("lap-detail-" + tanggal);
+  box.innerHTML = "Memuat barang...";
+  try {
+    const res = await fetch(API_URL + "?action=getLaporanItemHarian&tanggal=" + encodeURIComponent(tanggal));
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal memuat barang");
+
+    if (json.data.length === 0) {
+      box.innerHTML = '<div>Tidak ada barang terjual pada tanggal ini.</div>';
+      return;
+    }
+
+    box.innerHTML = `
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="border-bottom:1px solid #ddd; text-align:left; padding:5px 6px;">No Struk</th>
+            <th style="border-bottom:1px solid #ddd; text-align:left; padding:5px 6px;">Nama Barang</th>
+            <th class="kolom-harga" style="border-bottom:1px solid #ddd; text-align:right; padding:5px 6px;">Harga Jual</th>
+            <th class="kolom-harga" style="border-bottom:1px solid #ddd; text-align:right; padding:5px 6px;">Harga Beli</th>
+            <th style="border-bottom:1px solid #ddd; text-align:right; padding:5px 6px;">Qty</th>
+            <th style="border-bottom:1px solid #ddd; text-align:right; padding:5px 6px;">Subtotal</th>
+            <th class="kolom-harga" style="border-bottom:1px solid #ddd; text-align:right; padding:5px 6px;">Laba</th>
+            <th style="border-bottom:1px solid #ddd; width:70px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${json.data.map(it => {
+            const labaSatuan = (Number(it.harga_jual) || 0) - (Number(it.harga_beli) || 0);
+            const labaTotal = labaSatuan * (Number(it.qty) || 0);
+            return `
+            <tr>
+              <td style="padding:5px 6px;">${escapeHtml(it.no_struk)}</td>
+              <td style="padding:5px 6px;">${escapeHtml(it.nama)}</td>
+              <td class="kolom-harga" style="padding:5px 6px; text-align:right;">${rupiah(it.harga_jual)}</td>
+              <td class="kolom-harga" style="padding:5px 6px; text-align:right;">${rupiah(it.harga_beli)}</td>
+              <td style="padding:5px 6px; text-align:right;">${it.qty}</td>
+              <td style="padding:5px 6px; text-align:right;">${rupiah(it.subtotal)}</td>
+              <td class="kolom-harga" style="padding:5px 6px; text-align:right; color:#2ea55f; font-weight:700;">${rupiah(labaTotal)}</td>
+              <td style="padding:5px 6px; text-align:right;">
+                <button class="action-link hapus" onclick="hapusItemLaporan(${it.row}, '${tanggal}')">Hapus</button>
+              </td>
+            </tr>
+          `;
+          }).join("")}
+        </tbody>
+      </table>
+    `;
+  } catch (err) {
+    box.innerHTML = '<div style="color:#c0392b;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+async function hapusItemLaporan(itemRow, tanggal) {
+  if (!confirm("Hapus barang ini dari transaksi? Stok akan dikembalikan dan total transaksi dihitung ulang.")) return;
+  try {
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteItemTransaksi", row: itemRow }) });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal menghapus barang");
+    showToast("Barang dihapus dari transaksi.", "success");
+    await loadBarang();
+    await loadLaporanTabel();
+    setTimeout(() => {
+      const btn = document.querySelector(`#lap-detail-row-${tanggal}`);
+      if (btn) { /* baris akan dimuat ulang otomatis oleh loadLaporanTabel */ }
+    }, 0);
+  } catch (err) {
+    showToast("Gagal menghapus barang: " + err.message, "error");
+  }
+}
+
+// ==================== LAPORAN / DASHBOARD ====================
+let currentRange = "today";
+let chartHarian = null;
+let chartTren = null;
+
+document.querySelectorAll(".range-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentRange = btn.dataset.range;
+    document.querySelectorAll(".range-btn").forEach(b => b.classList.toggle("active", b === btn));
+    loadLaporan(currentRange);
+  });
+});
+
+function rangeLabel(r) {
+  return r === "today" ? "Hari ini" : r === "7d" ? "7 hari terakhir" : "30 hari terakhir";
+}
+
+async function loadLaporan(range) {
+  document.querySelectorAll(".range-btn").forEach(b => b.classList.toggle("active", b.dataset.range === range));
+  document.getElementById("laporan-cards").innerHTML = '<div style="padding:20px; color:#888;">Memuat data...</div>';
+  try {
+    const res = await fetch(API_URL + "?action=getLaporan&range=" + range);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Gagal memuat laporan");
+    renderLaporan(json.data);
+  } catch (err) {
+    document.getElementById("laporan-cards").innerHTML =
+      '<div style="padding:20px; color:#c0392b;">Gagal memuat laporan: ' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function renderLaporan(d) {
+  const sub = rangeLabel(d.range);
+  document.getElementById("laporan-cards").innerHTML = `
+    <div class="lap-card">
+      <div class="lap-label">Total Pendapatan</div>
+      <div class="lap-value">Rp ${rupiah(d.total_pendapatan)}</div>
+      <div class="lap-sub">${sub}</div>
+    </div>
+    <div class="lap-card">
+      <div class="lap-label">Total Transaksi</div>
+      <div class="lap-value">${rupiah(d.total_transaksi)}</div>
+      <div class="lap-sub">${sub}</div>
+    </div>
+    <div class="lap-card">
+      <div class="lap-label">Item Terjual</div>
+      <div class="lap-value">${rupiah(d.item_terjual)}</div>
+      <div class="lap-sub">${sub}</div>
+    </div>
+    <div class="lap-card">
+      <div class="lap-label">Total Laba</div>
+      <div class="lap-value" style="color:#2ea55f;">Rp ${rupiah(d.total_laba)}</div>
+      <div class="lap-sub">${sub}</div>
+    </div>
+  `;
+
+  // Chart penjualan harian (jumlah transaksi per hari, 7 hari terakhir)
+  const ctx1 = document.getElementById("chart-harian").getContext("2d");
+  if (chartHarian) chartHarian.destroy();
+  chartHarian = new Chart(ctx1, {
+    type: "bar",
+    data: {
+      labels: d.penjualan_harian.map(p => p.label),
+      datasets: [{ data: d.penjualan_harian.map(p => p.value), backgroundColor: "#a5b4fc", borderRadius: 4 }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+
+  // Chart tren pendapatan (30 hari terakhir)
+  const ctx2 = document.getElementById("chart-tren").getContext("2d");
+  if (chartTren) chartTren.destroy();
+  chartTren = new Chart(ctx2, {
+    type: "line",
+    data: {
+      labels: d.pendapatan_tren.map(p => p.label),
+      datasets: [{
+        data: d.pendapatan_tren.map(p => p.value),
+        borderColor: "#5b6bf5", backgroundColor: "rgba(91,107,245,0.12)",
+        fill: true, tension: 0.35, pointRadius: 0
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { x: { ticks: { maxTicksLimit: 6 } }, y: { beginAtZero: true } }
+    }
+  });
+
+  // Transaksi terakhir
+  const trxBox = document.getElementById("laporan-transaksi");
+  if (d.transaksi_terakhir.length === 0) {
+    trxBox.innerHTML = '<div style="color:#888; font-size:13px;">Belum ada transaksi.</div>';
+  } else {
+    trxBox.innerHTML = d.transaksi_terakhir.map(t => {
+      const tgl = new Date(t.tanggal);
+      const tglStr = tgl.toLocaleDateString("id-ID") + " " + tgl.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+      return `
+        <div class="lap-row">
+          <div>
+            <div style="font-weight:700;">${escapeHtml(t.no_struk)}</div>
+            <div style="font-size:11.5px; color:#888;">${tglStr} · ${escapeHtml(t.kasir || "")}</div>
+          </div>
+          <div style="font-weight:800; color:#2ea55f;">Rp ${rupiah(t.total)}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // Produk terlaris
+  const prodBox = document.getElementById("laporan-produk");
+  if (d.produk_terlaris.length === 0) {
+    prodBox.innerHTML = '<div style="color:#888; font-size:13px;">Belum ada data.</div>';
+  } else {
+    prodBox.innerHTML = d.produk_terlaris.map((p, idx) => `
+      <div class="lap-row">
+        <div>${idx + 1}. ${escapeHtml(p.nama)}</div>
+        <div style="font-weight:700;">${rupiah(p.qty)}x</div>
+      </div>
+    `).join("");
+  }
+}
+
+// ==================== CEK TRANSAKSI (via No Struk) ====================
+async function cekTransaksi() {
+  const input = document.getElementById("cek-trx-input");
+  const noStruk = input.value.trim();
+  const hasilEl = document.getElementById("cek-trx-hasil");
+
+  if (!noStruk) {
+    hasilEl.innerHTML = '<div style="color:#c0392b; font-size:13px;">Masukkan No Struk terlebih dahulu.</div>';
+    return;
+  }
+
+  hasilEl.innerHTML = '<div style="text-align:center; padding:24px; color:#777; font-size:13px;">Mencari...</div>';
+
+  try {
+    const res = await fetch(API_URL + "?action=getTransaksiDetail&no_struk=" + encodeURIComponent(noStruk));
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Transaksi tidak ditemukan");
+
+    const trx = json.data;
+    const tglObj = new Date(trx.tanggal);
+    const tglStr = String(tglObj.getDate()).padStart(2,'0') + "-" + String(tglObj.getMonth()+1).padStart(2,'0') + "-" + tglObj.getFullYear()
+      + " " + String(tglObj.getHours()).padStart(2,'0') + ":" + String(tglObj.getMinutes()).padStart(2,'0');
+
+    let itemsHtml = trx.items.map(it => `
+      <tr>
+        <td style="padding:6px 8px;">${escapeHtml(it.nama)}</td>
+        <td style="padding:6px 8px; text-align:right;">${rupiah(it.harga_jual)}</td>
+        <td style="padding:6px 8px; text-align:right;">${it.qty}</td>
+        <td style="padding:6px 8px; text-align:right;">${rupiah(it.subtotal)}</td>
+      </tr>
+    `).join("");
+
+    if (trx.extra && trx.extra.length > 0) {
+      itemsHtml += trx.extra.map(ex => `
+        <tr>
+          <td style="padding:6px 8px; color:#888;">${escapeHtml(ex.nama || 'Biaya tambahan')}</td>
+          <td style="padding:6px 8px; text-align:right; color:#888;">-</td>
+          <td style="padding:6px 8px; text-align:right; color:#888;">1</td>
+          <td style="padding:6px 8px; text-align:right; color:#888;">${rupiah(ex.harga)}</td>
+        </tr>
+      `).join("");
+    }
+
+    hasilEl.innerHTML = `
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:14px; font-size:13.5px;">
+        <div><b>No Struk:</b> ${escapeHtml(trx.no_struk)}</div>
+        <div><b>Tanggal:</b> ${tglStr}</div>
+        <div><b>Kasir:</b> ${escapeHtml(trx.kasir || '')}</div>
+        <div><b>Status:</b> <span style="color:${trx.status==='batal'?'#c0392b':'#2ea55f'};">${escapeHtml(trx.status||'')}</span></div>
+      </div>
+      <table style="width:100%; border-collapse:collapse; margin-bottom:14px;">
+        <thead>
+          <tr style="background:#f0f0f0;">
+            <th style="padding:6px 8px; text-align:left; font-size:12.5px;">Nama Barang</th>
+            <th style="padding:6px 8px; text-align:right; font-size:12.5px;">Harga</th>
+            <th style="padding:6px 8px; text-align:right; font-size:12.5px;">Qty</th>
+            <th style="padding:6px 8px; text-align:right; font-size:12.5px;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>${itemsHtml}</tbody>
+      </table>
+      <table class="summary-table" style="margin-left:0; max-width:340px;">
+        <tr><td class="label">Sub Total</td><td class="text-right">Rp ${rupiah(trx.subtotal)}</td></tr>
+        <tr><td class="label">Diskon</td><td class="text-right">Rp ${rupiah(trx.diskon)}</td></tr>
+        <tr class="total-row"><td class="label">Total</td><td class="text-right">Rp ${rupiah(trx.total)}</td></tr>
+        <tr><td class="label">Bayar</td><td class="text-right">Rp ${rupiah(trx.bayar)}</td></tr>
+        <tr class="kembali-row"><td class="label">Kembali</td><td class="text-right">Rp ${rupiah(trx.kembali)}</td></tr>
+      </table>
+    `;
+  } catch (err) {
+    hasilEl.innerHTML = '<div style="text-align:center; padding:24px; color:#c0392b; font-size:13px;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+// ==================== INIT ====================
+setMetaAwal();
+loadBarang();
+loadKategori();
+const _metaKasirEl = document.getElementById("meta-kasir-nama");
+if (_metaKasirEl) _metaKasirEl.textContent = NAMA_KASIR;
+applyStrukFont(loadTokoSetting().font);
+initHargaToggleState();
+renderCart();
+</script>
+
+</body>
+</html>
