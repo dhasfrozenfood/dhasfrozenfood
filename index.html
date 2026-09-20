@@ -12,7 +12,6 @@
   // sebelum kode lain memakai variabel global Chart.
   window.chartJsReady = new Promise((resolve, reject) => {
     const sumberCdn = [
-      "chart.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js",
       "https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js",
       "https://unpkg.com/chart.js@4.4.4/dist/chart.umd.min.js"
@@ -1514,52 +1513,7 @@
 
 <!-- Riwayat sekarang berupa halaman (#page-transaksi), bukan modal -->
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-  import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBTVmmSXf_dRzyrjYtYvkOR_O2YlEH1JfY",
-    authDomain: "frozen-food-dhas.firebaseapp.com",
-    databaseURL: "https://frozen-food-dhas-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "frozen-food-dhas",
-    storageBucket: "frozen-food-dhas.firebasestorage.app",
-    messagingSenderId: "468151586469",
-    appId: "1:468151586469:web:9bce64c7023228707b474c"
-  };
-
-  const fbApp = initializeApp(firebaseConfig);
-  const db = getDatabase(fbApp);
-
-  // Dipakai oleh script utama (di bawah) sebagai cache cepat.
-  // Sheets tetap jadi sumber data utama untuk baca ulang & semua tulis/update.
-  // Cache generik: bisa dipakai untuk data apa aja (barang, riwayat transaksi, laporan, dll)
-  // dengan "key" berbeda-beda. Sheets tetap jadi sumber data utama untuk baca ulang & semua tulis/update.
-  window.firebaseCache = {
-    async getData(key) {
-      try {
-        const snap = await get(ref(db, "cache/" + key));
-        return snap.exists() ? snap.val() : null;
-      } catch (e) {
-        console.warn("Firebase cache (" + key + ") tidak bisa diakses, lanjut pakai Sheets saja:", e);
-        return null;
-      }
-    },
-    setData(key, data) {
-      try {
-        set(ref(db, "cache/" + key), data).catch(e => console.warn("Gagal update cache Firebase (" + key + "):", e));
-      } catch (e) {
-        console.warn("Gagal update cache Firebase (" + key + "):", e);
-      }
-    },
-    // Nama lama, tetap dijaga biar kode barang yang sudah ada tidak perlu diubah
-    async getBarang() { return this.getData("barang"); },
-    setBarang(data) { this.setData("barang", data); }
-  };
-  // Script utama (di bawah) dijalankan browser SEBELUM script module ini selesai siap.
-  // Makanya kirim sinyal event begitu firebaseCache sudah siap dipakai.
-  window.dispatchEvent(new Event("firebase-cache-ready"));
-</script>
 
 <script>
 // ==================== TOGGLE LIHAT PASSWORD ====================
@@ -1724,39 +1678,64 @@ function setMetaAwal() {
   document.getElementById("no-struk").textContent = Math.floor(100000 + Math.random()*899999);
 }
 
+// ==================== HELPER API (aman dari respons bukan-JSON) ====================
+// Apps Script kadang membalas halaman HTML (login Google / error / belum di-deploy ulang).
+// Kalau langsung res.json() -> error "Unexpected token <". Helper ini baca sebagai teks
+// dulu, lalu beri pesan yang jelas.
+async function parseApiResponse(res) {
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    const petunjuk = /<html|<!doctype/i.test(text)
+      ? "Server mengirim halaman HTML, bukan data. Pastikan Web App di-deploy sebagai 'Anyone' dan sudah Deploy ulang (New version)."
+      : "Respons server tidak valid.";
+    throw new Error(petunjuk);
+  }
+}
+async function apiGet(query) {
+  const res = await fetch(API_URL + query);
+  return parseApiResponse(res);
+}
+async function apiPost(payload) {
+  // text/plain menghindari preflight CORS yang tidak didukung Apps Script
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  });
+  return parseApiResponse(res);
+}
+
 // ==================== MUAT DATA ====================
 async function loadBarang() {
   try {
-    const res = await fetch(API_URL + "?action=getBarang");
-    const json = await res.json();
+    const json = await apiGet("?action=getBarang");
     if (!json.success) throw new Error(json.error || "Gagal memuat data");
     allBarang = json.data;
+    try { localStorage.setItem("ffd_cache_barang", JSON.stringify(allBarang)); } catch (e) {}
     renderDaftarTable();
     renderKasirBarangList();
     renderStokMenipis();
-    // Sheets berhasil dibaca -> update cache Firebase biar load berikutnya lebih cepat
-    if (window.firebaseCache) window.firebaseCache.setBarang(allBarang);
   } catch (err) {
     showStatus("Gagal memuat data barang: " + err.message, "error");
   }
 }
 
-// Load cepat: tampilkan dulu data dari cache Firebase (kalau ada) biar nggak nunggu delay,
-// lalu tetap ambil data asli+terbaru dari Sheets di belakang layar (sumber utama).
-// Kalau Firebase error/kosong, otomatis fallback jalan seperti biasa (langsung ke Sheets).
+// Load cepat: tampilkan dulu data terakhir dari penyimpanan lokal browser (kalau ada),
+// lalu tetap ambil data terbaru dari Google Sheets di belakang layar (sumber utama).
 async function loadBarangCepat() {
+  // Tampilkan dulu data terakhir dari penyimpanan lokal browser biar tidak menunggu Sheets
   try {
-    if (window.firebaseCache) {
-      const cached = await window.firebaseCache.getBarang();
-      if (cached && Array.isArray(cached) && cached.length > 0) {
-        allBarang = cached;
-        renderDaftarTable();
-        renderKasirBarangList();
-        renderStokMenipis();
-      }
+    const cached = JSON.parse(localStorage.getItem("ffd_cache_barang") || "null");
+    if (Array.isArray(cached) && cached.length > 0) {
+      allBarang = cached;
+      renderDaftarTable();
+      renderKasirBarangList();
+      renderStokMenipis();
     }
   } catch (e) {
-    console.warn("Cache Firebase dilewati:", e);
+    console.warn("Cache lokal dilewati:", e);
   }
   loadBarang();
 }
@@ -2393,11 +2372,7 @@ document.getElementById("bayar-btn").addEventListener("click", async () => {
 
   try {
     if (!navigator.onLine) throw { offline: true };
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "checkout", items, subtotal, diskon, total, bayar, kembali, extra: extraForReceipt, kasir: NAMA_KASIR, metode })
-    });
-    const json = await res.json();
+    const json = await apiPost({ action: "checkout", items, subtotal, diskon, total, bayar, kembali, extra: extraForReceipt, kasir: NAMA_KASIR, metode });
     if (!json.success) throw new Error(json.error || "Checkout gagal");
 
     const gagal = (json.results || []).filter(r => !r.success);
@@ -2464,8 +2439,7 @@ function mulaiPengecekanQris() {
     if (total <= 0) return;
     document.getElementById("qris-status-nominal").textContent = rupiah(total);
     try {
-      const res = await fetch(API_URL + "?action=cekQris&total=" + encodeURIComponent(total) + "&_=" + Date.now(), { cache: "no-store" });
-      const json = await res.json();
+      const json = await apiGet("?action=cekQris&total=" + encodeURIComponent(total) + "&_=" + Date.now());
       if (json.success && json.cocok) {
         tandaiQrisSukses(json.nominal);
       }
@@ -2740,8 +2714,7 @@ async function trySyncOfflineQueue() {
     const current = getOfflineQueue();
     const item = current[0];
     try {
-      const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(item.payload) });
-      const json = await res.json();
+      const json = await apiPost(item.payload);
       if (!json.success) throw new Error(json.error || "Gagal sinkron");
       const sisa = getOfflineQueue();
       sisa.shift();
@@ -2772,29 +2745,23 @@ setInterval(() => { if (navigator.onLine) trySyncOfflineQueue(); }, 30000);
 let riwayatData = [];
 async function loadRiwayat() {
   const listEl = document.getElementById("riwayat-list");
-  // Tampilkan dulu dari cache Firebase kalau ada, biar nggak nunggu Sheets
-  if (window.firebaseCache) {
-    try {
-      const cached = await window.firebaseCache.getData("riwayat");
-      if (cached && Array.isArray(cached) && cached.length > 0) {
-        riwayatData = cached;
-        renderRiwayatList();
-      } else {
-        listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#777; font-size:13px;">Memuat riwayat...</div>';
-      }
-    } catch (e) {
+  try {
+    const cached = JSON.parse(localStorage.getItem("ffd_cache_riwayat") || "null");
+    if (Array.isArray(cached) && cached.length > 0) {
+      riwayatData = cached;
+      renderRiwayatList();
+    } else {
       listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#777; font-size:13px;">Memuat riwayat...</div>';
     }
-  } else {
+  } catch (e) {
     listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#777; font-size:13px;">Memuat riwayat...</div>';
   }
   try {
-    const res = await fetch(API_URL + "?action=getRiwayat&limit=50");
-    const json = await res.json();
+    const json = await apiGet("?action=getRiwayat&limit=50");
     if (!json.success) throw new Error(json.error || "Gagal memuat riwayat");
     riwayatData = json.data;
     renderRiwayatList();
-    if (window.firebaseCache) window.firebaseCache.setData("riwayat", riwayatData);
+    try { localStorage.setItem("ffd_cache_riwayat", JSON.stringify(riwayatData)); } catch (e) {}
   } catch (err) {
     listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#c0392b; font-size:13px;">' + escapeHtml(err.message) + '</div>';
   }
@@ -2835,8 +2802,7 @@ function renderRiwayatList() {
 
 async function lihatStrukLama(noStruk) {
   try {
-    const res = await fetch(API_URL + "?action=getTransaksiDetail&no_struk=" + encodeURIComponent(noStruk));
-    const json = await res.json();
+    const json = await apiGet("?action=getTransaksiDetail&no_struk=" + encodeURIComponent(noStruk));
     if (!json.success) throw new Error(json.error || "Gagal memuat detail transaksi");
     showReceipt(json.data);
   } catch (err) {
@@ -2847,8 +2813,7 @@ async function lihatStrukLama(noStruk) {
 async function hapusTransaksi(noStruk) {
   if (!confirm(`Hapus transaksi ${noStruk}? Stok barang yang terjual akan dikembalikan.`)) return;
   try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteTransaksi", no_struk: noStruk }) });
-    const json = await res.json();
+    const json = await apiPost({ action: "deleteTransaksi", no_struk: noStruk });
     if (!json.success) throw new Error(json.error || "Gagal menghapus transaksi");
     showToast("Transaksi berhasil dihapus & stok dikembalikan.", "success");
     await loadBarang();
@@ -2862,8 +2827,7 @@ async function hapusTransaksi(noStruk) {
 let kategoriList = [];
 async function loadKategori() {
   try {
-    const res = await fetch(API_URL + "?action=getKategori");
-    const json = await res.json();
+    const json = await apiGet("?action=getKategori");
     if (json.success) kategoriList = json.data;
   } catch (err) { /* diam-diam gagal, tabel akan tampil kosong */ }
 }
@@ -2896,8 +2860,7 @@ async function submitKategori() {
   }
   statusEl.textContent = "Menyimpan...";
   try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "addKategori", nama }) });
-    const json = await res.json();
+    const json = await apiPost({ action: "addKategori", nama });
     if (!json.success) throw new Error(json.error || "Gagal menambah kategori");
     input.value = "";
     statusEl.textContent = "";
@@ -2913,8 +2876,7 @@ async function editKategoriPrompt(row, namaLama) {
   const namaBaru = prompt("Ubah nama kategori:", namaLama);
   if (namaBaru === null || !namaBaru.trim() || namaBaru.trim() === namaLama) return;
   try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateKategori", row, nama: namaBaru.trim() }) });
-    const json = await res.json();
+    const json = await apiPost({ action: "updateKategori", row, nama: namaBaru.trim() });
     if (!json.success) throw new Error(json.error || "Gagal mengubah kategori");
     await loadKategori();
     renderKategoriTable();
@@ -2927,8 +2889,7 @@ async function editKategoriPrompt(row, namaLama) {
 async function hapusKategori(row) {
   if (!confirm("Hapus kategori ini?")) return;
   try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteKategori", row }) });
-    const json = await res.json();
+    const json = await apiPost({ action: "deleteKategori", row });
     if (!json.success) throw new Error(json.error || "Gagal menghapus kategori");
     await loadKategori();
     renderKategoriTable();
@@ -3330,8 +3291,7 @@ async function submitBarangForm() {
       ? { action: "updateBarang", row: barangFormRow, data }
       : { action: "addBarang", data };
 
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-    const json = await res.json();
+    const json = await apiPost(payload);
     if (!json.success) throw new Error(json.error || "Gagal menyimpan barang");
 
     closeBarangForm();
@@ -3351,8 +3311,7 @@ async function hapusBarang(rowNum) {
   if (!confirm(`Hapus "${nama}" dari daftar produk? Tindakan ini tidak bisa dibatalkan.`)) return;
 
   try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteBarang", row: rowNum }) });
-    const json = await res.json();
+    const json = await apiPost({ action: "deleteBarang", row: rowNum });
     if (!json.success) throw new Error(json.error || "Gagal menghapus barang");
     showToast("Barang berhasil dihapus.", "success");
     await loadBarang();
@@ -3587,8 +3546,7 @@ async function submitKaryawanPwd() {
   errEl.textContent = "Memeriksa...";
   try {
     const action = karyawanPwdStep === 1 ? "cekPwdKaryawan1" : "cekPwdKaryawan2";
-    const res = await fetch(API_URL + "?action=" + action + "&pwd=" + encodeURIComponent(pwd));
-    const data = await res.json();
+    const data = await apiGet("?action=" + action + "&pwd=" + encodeURIComponent(pwd));
 
     if (!data.success) {
       errEl.textContent = "Password salah. Coba lagi.";
@@ -3701,8 +3659,7 @@ async function loadLaporanTabel() {
   if (selesai) url += "&selesai=" + encodeURIComponent(selesai);
 
   try {
-    const res = await fetch(url);
-    const json = await res.json();
+    const json = await apiGet(url.substring(API_URL.length));
     if (!json.success) throw new Error(json.error || "Gagal memuat laporan");
 
     const rows = json.data;
@@ -3788,8 +3745,7 @@ async function loadLaporanItemHarian(tanggal) {
   const box = document.getElementById("lap-detail-" + tanggal);
   box.innerHTML = "Memuat barang...";
   try {
-    const res = await fetch(API_URL + "?action=getLaporanItemHarian&tanggal=" + encodeURIComponent(tanggal));
-    const json = await res.json();
+    const json = await apiGet("?action=getLaporanItemHarian&tanggal=" + encodeURIComponent(tanggal));
     if (!json.success) throw new Error(json.error || "Gagal memuat barang");
 
     if (json.data.length === 0) {
@@ -3871,8 +3827,7 @@ async function hapusItemLaporanTerpilih(tanggal) {
   let gagal = 0;
   for (const row of rows) {
     try {
-      const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteItemTransaksi", row }) });
-      const json = await res.json();
+      const json = await apiPost({ action: "deleteItemTransaksi", row });
       if (!json.success) gagal++;
     } catch (e) {
       gagal++;
@@ -3891,8 +3846,7 @@ async function hapusItemLaporanTerpilih(tanggal) {
 async function hapusItemLaporan(itemRow, tanggal) {
   if (!confirm("Hapus barang ini dari transaksi? Stok akan dikembalikan dan total transaksi dihitung ulang.")) return;
   try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteItemTransaksi", row: itemRow }) });
-    const json = await res.json();
+    const json = await apiPost({ action: "deleteItemTransaksi", row: itemRow });
     if (!json.success) throw new Error(json.error || "Gagal menghapus barang");
     showToast("Barang dihapus dari transaksi.", "success");
     await loadBarang();
@@ -3949,33 +3903,24 @@ async function loadLaporan(range) {
   document.querySelectorAll(".range-btn").forEach(b => b.classList.toggle("active", b.dataset.range === range));
   const cardsEl = document.getElementById("laporan-cards");
   const statusEl = document.getElementById("analisis-status");
-  const cacheKey = "laporan_" + range;
-  if (window.firebaseCache) {
-    try {
-      const cached = await window.firebaseCache.getData(cacheKey);
-      if (cached) {
-        await renderLaporan(cached);
-      } else {
-        cardsEl.innerHTML = '<div style="padding:20px; color:#888;">Memuat data...</div>';
-        if (statusEl) statusEl.innerHTML = '<span style="color:#888;">Memuat data grafik...</span>';
-      }
-    } catch (e) {
-      cardsEl.innerHTML = '<div style="padding:20px; color:#888;">Memuat data...</div>';
-      if (statusEl) statusEl.innerHTML = '<span style="color:#888;">Memuat data grafik...</span>';
-    }
-  } else {
+  const cacheKey = "ffd_cache_laporan_" + range;
+  let adaCache = false;
+  try {
+    const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
+    if (cached) { await renderLaporan(cached); adaCache = true; }
+  } catch (e) { /* abaikan cache rusak */ }
+  if (!adaCache) {
     cardsEl.innerHTML = '<div style="padding:20px; color:#888;">Memuat data...</div>';
     if (statusEl) statusEl.innerHTML = '<span style="color:#888;">Memuat data grafik...</span>';
   }
   try {
-    const res = await fetch(API_URL + "?action=getLaporan&range=" + range);
-    const json = await res.json();
+    const json = await apiGet("?action=getLaporan&range=" + range);
     if (!json.success) throw new Error(json.error || "Gagal memuat laporan");
     await renderLaporan(json.data);
-    if (window.firebaseCache) window.firebaseCache.setData(cacheKey, json.data);
+    try { localStorage.setItem(cacheKey, JSON.stringify(json.data)); } catch (e) {}
   } catch (err) {
     const pesan = '<div style="padding:20px; color:#c0392b;">Gagal memuat laporan: ' + escapeHtml(err.message) + '</div>';
-    cardsEl.innerHTML = pesan;
+    if (!adaCache) cardsEl.innerHTML = pesan;
     if (statusEl) statusEl.innerHTML = '<span style="color:#c0392b;">Gagal memuat data grafik: ' + escapeHtml(err.message) + '</span>';
   }
 }
@@ -4103,8 +4048,7 @@ async function renderLaporan(d) {
 // ==================== CHART ANALISIS LANJUTAN (laba, jam ramai, margin, stok, dst) ====================
 async function loadAnalisisLanjutan() {
   try {
-    const res = await fetch(API_URL + "?action=getAnalisisLanjutan");
-    const json = await res.json();
+    const json = await apiGet("?action=getAnalisisLanjutan");
     if (!json.success) throw new Error(json.error || "Gagal memuat analisis lanjutan");
     renderAnalisisLanjutan(json.data);
   } catch (err) {
@@ -4403,8 +4347,7 @@ async function cekTransaksi() {
   hasilEl.innerHTML = '<div style="text-align:center; padding:24px; color:#777; font-size:13px;">Mencari...</div>';
 
   try {
-    const res = await fetch(API_URL + "?action=getTransaksiDetail&no_struk=" + encodeURIComponent(noStruk));
-    const json = await res.json();
+    const json = await apiGet("?action=getTransaksiDetail&no_struk=" + encodeURIComponent(noStruk));
     if (!json.success) throw new Error(json.error || "Transaksi tidak ditemukan");
 
     const trx = json.data;
@@ -4472,8 +4415,7 @@ async function cekTransaksi() {
 async function returTransaksiIni(noStruk) {
   if (!confirm(`Retur/refund transaksi ${noStruk}?\n\nStok barang yang terjual akan dikembalikan otomatis dan status transaksi jadi "batal". Tindakan ini tidak bisa dibatalkan.`)) return;
   try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteTransaksi", no_struk: noStruk }) });
-    const json = await res.json();
+    const json = await apiPost({ action: "deleteTransaksi", no_struk: noStruk });
     if (!json.success) throw new Error(json.error || "Gagal memproses retur");
     showToast("Retur berhasil, stok sudah dikembalikan.", "success");
     await loadBarang();
@@ -4487,25 +4429,7 @@ async function returTransaksiIni(noStruk) {
 setMetaAwal();
 terapkanVisibilitasTombolKamera();
 terapkanModeKaryawan();
-// Firebase (module script) mungkin belum siap saat baris ini dieksekusi.
-// Kalau belum siap, tunggu sinyal "firebase-cache-ready" dulu (maksimal sebentar),
-// baru jalankan loadBarangCepat supaya cache Firebase benar-benar kepakai.
-if (window.firebaseCache) {
-  loadBarangCepat();
-} else {
-  let _firebaseWaited = false;
-  window.addEventListener("firebase-cache-ready", () => {
-    if (_firebaseWaited) return;
-    _firebaseWaited = true;
-    loadBarangCepat();
-  });
-  // Jaga-jaga kalau Firebase gagal total load (mis. diblokir/offline) -> tetap jalan pakai Sheets saja
-  setTimeout(() => {
-    if (_firebaseWaited) return;
-    _firebaseWaited = true;
-    loadBarangCepat();
-  }, 800);
-}
+loadBarangCepat();
 loadKategori();
 const _metaKasirEl = document.getElementById("meta-kasir-nama");
 if (_metaKasirEl) _metaKasirEl.textContent = NAMA_KASIR;
