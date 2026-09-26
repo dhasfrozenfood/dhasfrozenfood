@@ -2350,6 +2350,24 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "%") { kalkPercent(); e.preventDefault(); }
 });
 
+// ID unik per PERCOBAAN checkout (bukan per klik) - dibuat sekali saat mulai proses,
+// lalu dipakai ULANG untuk retry/antrian offline supaya server bisa mengenali kalau
+// request yang sama terkirim lebih dari sekali (koneksi lemot/putus-nyambung) dan
+// tidak memprosesnya dua kali. Ini yang mencegah stok/barang kepotong berkali lipat.
+function buatCheckoutId() {
+  return "ck_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
+}
+
+// apiPost dengan batas waktu (default 45 detik). Kalau backend memang lambat tapi
+// masih hidup, kita tunggu; kalau sudah kelewat lama baru dianggap gagal, supaya
+// tombol tidak "menggantung" tanpa kepastian.
+function apiPostDenganBatasWaktu(payload, batasMs = 45000) {
+  return Promise.race([
+    apiPost(payload),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT_LAMBAT")), batasMs))
+  ]);
+}
+
 document.getElementById("bayar-btn").addEventListener("click", async () => {
   if (cart.length === 0) return;
   let { subtotal, diskon, total, bayar, kembali } = updateSummary();
@@ -2369,10 +2387,12 @@ document.getElementById("bayar-btn").addEventListener("click", async () => {
   const itemsForReceipt = cart.map(i => ({ nama: i.nama, harga_jual: i.harga_jual, qty: i.qty }));
   const extraForReceipt = extraItems.filter(ex => ex.nama || ex.harga);
   const metode = document.getElementById("metode-input").value || "Cash";
+  const checkoutId = buatCheckoutId();
+  const payload = { action: "checkout", checkout_id: checkoutId, items, subtotal, diskon, total, bayar, kembali, extra: extraForReceipt, kasir: NAMA_KASIR, metode };
 
   try {
     if (!navigator.onLine) throw { offline: true };
-    const json = await apiPost({ action: "checkout", items, subtotal, diskon, total, bayar, kembali, extra: extraForReceipt, kasir: NAMA_KASIR, metode });
+    const json = await apiPostDenganBatasWaktu(payload);
     if (!json.success) throw new Error(json.error || "Checkout gagal");
 
     const gagal = (json.results || []).filter(r => !r.success);
@@ -2385,9 +2405,12 @@ document.getElementById("bayar-btn").addEventListener("click", async () => {
       loadBarang(); // refresh stok di belakang layar, tidak perlu ditunggu supaya struk & tombol langsung siap
     }
   } catch (err) {
-    if (err && err.offline === true || (err instanceof TypeError)) {
-      // internet putus / gagal jaringan -> simpan transaksi lokal dulu, jangan hilang
-      const payload = { action: "checkout", items, subtotal, diskon, total, bayar, kembali, extra: extraForReceipt, kasir: NAMA_KASIR, metode };
+    const timeoutAtauOffline = (err && err.offline === true) || (err instanceof TypeError) || (err && err.message === "TIMEOUT_LAMBAT");
+    if (timeoutAtauOffline) {
+      // internet putus / server kelamaan balas -> simpan transaksi lokal dulu, jangan hilang.
+      // checkout_id yang SAMA ikut disimpan, jadi walau nanti disinkron otomatis dan
+      // ternyata request pertama tadi sebenarnya sudah sukses di server, server akan
+      // menolak memprosesnya dua kali (bukan menambah stok/transaksi baru lagi).
       const tempNoStruk = antrikanTransaksiOffline(payload, itemsForReceipt, extraForReceipt);
       // kurangi stok lokal secara optimis biar kasir tetap bisa lihat sisa stok kira-kira
       cart.forEach(ci => {
@@ -2396,9 +2419,9 @@ document.getElementById("bayar-btn").addEventListener("click", async () => {
       });
       showReceipt({ no_struk: tempNoStruk, tanggal: new Date().toISOString(), items: itemsForReceipt, extra: extraForReceipt, subtotal, diskon, total, bayar, kembali, metode, offline: true });
       resetTransaksi();
-      showToast("Tidak ada koneksi — transaksi disimpan & akan disinkron otomatis", "error");
+      showToast("Koneksi/server lambat — transaksi disimpan & akan disinkron otomatis", "error");
     } else {
-      showStatus("Gagal checkout: " + err.message, "error");
+      showStatus("Gagal checkout: " + (err && err.message ? err.message : String(err)), "error");
     }
   } finally {
     btn.textContent = "Proses Bayar";
